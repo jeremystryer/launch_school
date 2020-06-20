@@ -41,13 +41,51 @@
 // initialize empty array, for loop from 1 up to and incl. arg1
 //    push each num to empty array
 
-// while (arr.length > 1) {
-//  index (start at 0)
-//  if index == 0
-//    incrementer = 2;
-//  else
-//      incrementer = 3
-// splice at arr[incrementer] for that one element
-//    if splicing then index = 1
-// if index === arr.length, index = 0
+// while (arr.length > 1) [1,2,3,4,5,6,7]
+// index = 0
+// incrementer is 3 from input
+// have a counter = 1
+// for every iteration, add 1 to counter
+// when counter === incrementer, splice element
+// when index === arr length, index to 0
 // return arr[0]
+
+
+function josephusSurvivor(survivors, incrementer) {
+  let listOfSurvivors = createListOfSurvivors(survivors);
+  let index = 0;
+  let countUpToIncrementer = 1;
+
+  while (listOfSurvivors.length > 1) {
+
+    if (countUpToIncrementer === incrementer) {
+      listOfSurvivors.splice(index, 1);
+      countUpToIncrementer = 0;
+      index -= 1;
+    }
+
+    index += 1;
+    countUpToIncrementer += 1;
+
+    if (index >= listOfSurvivors.length) index = 0;
+  }
+
+  return listOfSurvivors[0];
+}
+
+function createListOfSurvivors(total) {
+  let listOfSurvivors = [];
+
+  for (let count = 1; count <= total; count += 1) {
+    listOfSurvivors.push(count);
+  }
+
+  return listOfSurvivors;
+}
+
+
+
+console.log(josephusSurvivor(7,3)); // 4
+console.log(josephusSurvivor(11,19)); // 10
+console.log(josephusSurvivor(1,300)); // 1
+console.log(josephusSurvivor(14,2)); // 13
