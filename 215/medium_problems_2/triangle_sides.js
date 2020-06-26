@@ -24,49 +24,36 @@
 //    no inputs are equal?
 //      is the sum of two smaller inputs greater than 3rd input?
 
-// function triangle(side1, side2, side3) {
-//   let sides = [side1, side2, side3];
-//   if (sides.includes(0)) return 'invalid';
-//   let sortedSides = sortSides(sides);
-//
-//   if (sortedSides.every(side => side === sides[0])) return 'equilateral';
-//   if ((sortedSides[0] === sortedSides[1] || sortedSides[1] === sortedSides[2]) && sortedSides[0] + sortedSides[1] > sortedSides[2]) {
-//     return 'isosceles';
-//   } else if (sortedSides[0] + sortedSides[1] > sortedSides[2]) {
-//     return 'scalene';
-//   } else {
-//     return 'invalid';
-//   }
-// }
-//
-// function sortSides(sides) {
-//   let sortedSides = [];
-//   sortedSides.push(sides[0])
-//
-//   for (let index = 1; index < sides.length; index += 1) {
-//     if (sides[index] >= sortedSides[sortedSides.length - 1]) {
-//       sortedSides.push(sides[index]);
-//     } else {
-//       sortedSides.unshift(sides[index]);
-//     }
-//   }
-//
-//   return sortedSides;
-// }
+function triangle(side1, side2, side3) {
+  let sides = [side1, side2, side3];
+  if (sides.includes(0)) return 'invalid';
+  let sortedSides = sortSides(sides);
 
-function triangle(a, b, c) {
-  if (a <= 0 || b <= 0 || c <= 0) {
-    return 'invalid';
-  } else if (a + b <= c || a + c <= b || b + c <= a) {
-    return 'invalid';
-  } else if (a === b && a === c && b === c) {
-    return 'equilateral';
-  } else if (a === b || a === c || b === c) {
+  if (sortedSides.every(side => side === sides[0])) return 'equilateral';
+  if ((sortedSides[0] === sortedSides[1] || sortedSides[1] === sortedSides[2]) && sortedSides[0] + sortedSides[1] > sortedSides[2]) {
     return 'isosceles';
-  } else {
+  } else if (sortedSides[0] + sortedSides[1] > sortedSides[2]) {
     return 'scalene';
+  } else {
+    return 'invalid';
   }
 }
+
+function sortSides(sides) {
+  let sortedSides = [];
+  sortedSides.push(sides[0])
+
+  for (let index = 1; index < sides.length; index += 1) {
+    if (sides[index] >= sortedSides[sortedSides.length - 1]) {
+      sortedSides.push(sides[index]);
+    } else {
+      sortedSides.unshift(sides[index]);
+    }
+  }
+
+  return sortedSides;
+}
+
 
 console.log(triangle(3, 3, 3));        // "equilateral"
 console.log(triangle(3, 3, 1.5));      // "isosceles"
@@ -76,4 +63,4 @@ console.log(triangle(0, 3, 3));        // "invalid"
 console.log(triangle(3, 1, 1));        // "invalid"
 console.log(triangle(4, 9, 4));        // "invalid"
 console.log(triangle(4, 7, 4));        // "isosceles"
-console.log(triangle(4, 10, 4));        // "invalid"
+console.log(triangle(4, 4, 10));        // "invalid"
