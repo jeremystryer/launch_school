@@ -16,12 +16,9 @@
 
 // ALGORITHM
 
-
-
-
 function pluck(objects, keys) {
   let result = [];
-  let match;;
+  let match;
 
   objects.forEach(function (object) {
     let subarr = [];
@@ -39,7 +36,6 @@ function pluck(objects, keys) {
           subarr.push(object[key]);
         }
       });
-
       result.push(subarr);
     } else {
       keys.forEach(function (key) {
