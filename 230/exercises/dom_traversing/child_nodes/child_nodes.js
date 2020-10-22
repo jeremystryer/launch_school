@@ -1,46 +1,24 @@
-// Write code that returns the number of direct and indirect child nodes for a given parent node as an array.
-
-// Any DOM node that has at least one child node is a parent node.
-// Indirect child nodes are the child nodes of child nodes.
-
 function childNodes(id) {
-  let directChildren;
-  let indirectChildren = 0;
-  let stringifiedId = String(id);
-  let node = document.getElementById(stringifiedId);
+  let count = 0;
 
-  let childNodes = node.childNodes;
+  function countAllChildren(node) {
+    count += 1;
 
-  directChildren = childNodes.length;
+    for (let index = 0; index < node.childNodes.length; index += 1) {
+      countAllChildren(node.childNodes[index]);
+    }
 
-  for (let index = 0; index < directChildren; index += 1) {
-    indirectChildren += countChildren(childNodes[index]);
+    return count;
   }
 
-  return [directChildren, indirectChildren - directChildren];
+  let directChildren;
+  let indirectChildren;
+  let node = document.getElementById(id);
+  directChildren = node.childNodes.length;
+  indirectChildren = countAllChildren(node) - directChildren - 1;
+  return [directChildren, indirectChildren];
 }
 
-function countChildren(childNode) {
-  let quantity = 0;
-
-  (function count(childNode) {
-    if (childNode.childNodes.length > 0) {
-      // quantity += childNode.childNodes.length;
-      for (let index = 0; index < childNode.childNodes.length; index += 1) {
-        quantity += childNode.childNodes.length;
-        count(childNode.childNodes[index]);
-      }
-    }
-  })(childNode);
-
-  return quantity;
-}
-
-
-// sample output
-childNodes(1);
-// [9, 12]
-childNodes(4);
-// [3, 1]
-childNodes(9);
-// [1, 1]
+console.log(childNodes(1)); // [9, 12]
+console.log(childNodes(4)); // [3, 1]
+console.log(childNodes(9)); // [1, 1]
