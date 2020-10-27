@@ -1,8 +1,6 @@
 // Write a randomizer function that accepts n callbacks and calls each callback at some random point in time between now and 2 * n seconds from now. For instance, if the caller provides 5 callbacks, the function should run them all sometime within 10 seconds.
-
+//
 // While running, randomizer should log the elapsed time every second: 1, 2, 3, ..., 2 * n.
-
-// Expect the output to change with each run due to the random execution times.
 
 function callback1() {
   console.log('callback1');
@@ -16,21 +14,26 @@ function callback3() {
   console.log('callback3');
 }
 
-function randomizer(callbacks) {
-  let callbacksArray = Array.prototype.slice.call(arguments);
-  let maxTimeSeconds = callbacksArray.length * 2;
-  let randomSelectedSecond;
+function randomizer(...callbacks) {
+  let duration = callbacks.length * 2;
+  const ONE_SECOND_IN_MILLISECONDS = 1000;
 
-  for (let i = 1; i <= callbacksArray.length * 2; i += 1) {
-    setTimeout(function() {
-     console.log(i);
-    }, i * 1000);
-  }
+  logTime();
 
-  callbacksArray.forEach(function(callback, index) {
-    randomSelectedSecond = Math.floor(Math.random() * maxTimeSeconds);
-    setTimeout(callback, randomSelectedSecond * 1000);
+  callbacks.forEach(function(callback) {
+    let randomSecond = Math.floor(Math.random() * duration)
+    setTimeout(callback, randomSecond * ONE_SECOND_IN_MILLISECONDS);
   });
+
+  function logTime() {
+    let count = 1;
+
+    let counting = setInterval( () => {
+      console.log(count);
+      count += 1;
+      if (count > duration) clearInterval(counting);
+    }, ONE_SECOND_IN_MILLISECONDS);
+  }
 }
 
 randomizer(callback1, callback2, callback3);
