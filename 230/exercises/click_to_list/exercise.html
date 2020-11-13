@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Clicking List Exercise</title>
+    <style media="screen">
+    </style>
+    <script>
+      // Write javascript code that imitates the behavior produced by the file finished_script.html also found in this directory.
+      function createList(node) {
+        let text = node.textContent;
+        let info = text.split('-');
+
+        return (  [
+                    `Name: ${info[0]}`,
+                    `Location: ${info[1]}`,
+                    `Study History: ${info[2]}`,
+                    `Current Location: ${info[3]}`,
+                    `Fun Fact: ${info[4]}`
+                  ]
+                );
+      }
+
+      function createLine(node) {
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        let body = document.body;
+
+        body.addEventListener('click', event => {
+          let target = event.target;
+
+          if (target.tagName === 'P') {
+            let listText = createList(target);
+            let ul = document.createElement('ul');
+            body.replaceChild(ul, target);
+
+            listText.forEach(info => {
+              let li = document.createElement('li');
+              ul.appendChild(li);
+              li.innerHTML = info;
+            });
+
+          } else if (target.tagName === 'li' || 'ul') {
+
+            console.log(target);
+
+          }
+            else {
+            let background = body.style.backgroundColor;
+            background === 'red' ? body.style.backgroundColor = 'white' : body.style.backgroundColor = 'red';
+          }
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <p id="drew">Drew - Colorado - LS 2 yrs - lesson 4 - in JQuery & slight dislike of front end</p>
+    <p id="owen">Owen - Vermont - LS 1.5 yrs - lesson 2 - in Events & likes front end</p>
+    <p id="alex">Alex - Pakistan - LS 2 yrs - lesson 2 beginning - Events  </p>
+    <p id="will">Will - Cali// in Chicago - LS 2.5 yrs - Free at last - Atrophy fixing</p>
+    <p id="ezra">Ezra - St. Louis, Missouri - LS 1.5 yrs - lesson 3  - Autocomplete & has clone</p>
+    <p id="Jeremy">Jeremy - Mexico - LS 2.5 yrs - lesson 3 - submitting XHR requests</p>
+    <p id="rodney">Rodney - Puerto Rico - LS 0.5 yrs - lesson 3  - Autocomplete</p>
+  </body>
+</html>

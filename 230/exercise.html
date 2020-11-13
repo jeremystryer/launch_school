@@ -1,25 +1,80 @@
-<html>
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
   <head>
-    <title>Newsletter Signup</title>
-  </head>``
+    <meta charset="utf-8">
+    <title>Exercise</title>
+    <style media="screen">
+      main, #sub {
+        padding: 15px;
+      }
+      main {
+        width: 100%;
+        height: 200px;
+        background: blue;
+        color: white;
+      }
+
+      #sub {
+        position: relative;
+        top: 100px;
+        left: 15px;
+        background: red;
+        height: 50px;
+        width: 50%;
+      }
+    </style>
+    <script type="text/javascript">
+      document.addEventListener('DOMContentLoaded', () => {
+        let main = document.querySelector('main');
+        let section = document.querySelector('section');
+
+        // main.addEventListener('contextmenu', event => {
+        //   event.preventDefault();
+        //   alert('main');
+        // });
+        //
+        // section.addEventListener('contextmenu', event => {
+        //   event.preventDefault();
+        //   alert('sub');
+        //   event.stopPropagation();
+        // });
+
+        main.addEventListener('contextmenu', event => {
+          event.preventDefault();
+          console.log(event);
+          alert(event.target.tagName);
+
+          // if (event.target === section) {
+          //   event.stopPropagation();
+          // }
+        });
+      });
+    </script>
+  </head>
   <body>
-    <!-- A short comment -->
-    <h1>Newsletter Signup</h1>
-    <p class="intro" id="simple">
-      To receive our weekly emails, enter your email address below.
-      <a href="info.html">Get more info</a>.
-    </p>
-    <div class="form">
-      <form>
-        <label>
-          Enter your email:
-          <input name="email" placeholder="user.name@domain.test"/>
-        </label>
-        <p class="controls">
-          <button id="cancelButton">Cancel</button>
-          <button type="submit" id="submitButton">Subscribe</button>
-        </p>
-      </form>
-    </div>
+    <main>
+      Main Area
+      <section id="sub">
+        Sub Area
+      </section>
+    </main>
   </body>
 </html>
+
+<!-- Reviewing this problem: https://launchschool.com/exercises/b4bcd2a0
+
+The LS solution creates two event handlers: one for the main element and when for the section element.
+
+An alternative solution is to have just one event handler one the main element, prevent the default action of the menu from opening up and alert the tag name of the event's target property.
+
+Why does this alternative solution work?
+
+There are 3 phases for the event propagation path: capture, target, and bubble.
+
+If the section element is clicked, the event object goes through the capture phase where no event handlers are triggered.
+
+The event object gets to the target phase where no event handlers are triggered.
+
+The event object goes up through the bubble phase and when it reaches the main element, the event handler is triggered. The value of the target property of the event object is the section element, so the tag name of the section element is alerted.
+
+So there's a distinction between the target phase of the event propagation path and the target property defined on all event objects. -->

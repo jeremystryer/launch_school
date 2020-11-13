@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Clicking List Exercise</title>
+  </head>
+  <body>
+    <p id="drew">Drew - Colorado - LS 2 yrs - lesson 4 - in JQuery & slight dislike of front end</p>
+    <p id="owen">Owen - Vermont - LS 1.5 yrs - lesson 2 - in Events & likes front end</p>
+    <p id="alex">Alex - Pakistan - LS 2 yrs - lesson 2 beginning - Events  </p>
+    <p id="will">Will - Cali// in Chicago - LS 2.5 yrs - Free at last - Atrophy fixing</p>
+    <p id="ezra">Ezra - St. Louis, Missouri - LS 1.5 yrs - lesson 3  - Autocomplete & has clone</p>
+    <p id="Jeremy">Jeremy - Mexico - LS 2.5 yrs - lesson 3 - submitting XHR requests</p>
+    <p id="rodney">Rodney - Puerto Rico - LS 0.5 yrs - lesson 3  - Autocomplete</p>
+  </body>
+  <script>
+    let body = document.body;
+    body.addEventListener('click', event => {
+      let whatIClicked = event.target;
+      if (whatIClicked.tagName === 'P') {
+        event.target.innerHTML = createList(whatIClicked).innerHTML;
+      } else if (event.target.tagName === 'LI' || event.target.tagName === 'UL') {
+        let pNode = event.target;
+        while (pNode.tagName !== 'P') {
+          pNode = pNode.parentNode;
+        }
+        pNode.textContent = createList(pNode);
+      } else {
+        let background = document.body.style.backgroundColor;
+        body.style.backgroundColor = background === 'red' ? '' : 'red'
+      }
+    });
+    function createList(node) {
+      console.log(node);
+      if (node.children.length === 0) {
+        let list = document.createElement('ul');
+        let elements = node.textContent.split(' - ');
+        list.innerHTML = `<li>Name: ${elements[0]}</li>\n<li>Location: ${elements[1]}</li>\n<li>Study History: ${elements[2]}</li>\n<li>Current Location In Course: ${elements[3]}</li>\n<li>Fun Fact: ${elements[4]}</li>`
+        return list;
+      } else {
+        let text = [...node.children].map((li) => li.textContent.split(': ')[1]).join(' - ');
+        return text;
+      }
+    };
+  </script>
+</html>
