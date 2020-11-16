@@ -61,7 +61,7 @@
 
           request.open('POST', `https://ls-230-web-store-demo.herokuapp.com${form.getAttribute('action')}`);
           request.setRequestHeader('Authorization', 'token AUTH_TOKEN');
-          
+
           request.addEventListener('load', event => {
             store.innerHTML = request.response;
           });

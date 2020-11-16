@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Form to Add Staff to Booking App</title>
+    <style media="screen">
+      html, body {
+        font-weight: bold;
+        color: #BB2707;
+      }
+
+      label {
+        display: block;
+        margin: 10px 0 0 40px;
+      }
+
+      button {
+        margin-top: 15px;
+        padding: 15px 30px;
+        background-color: #EA2701;
+        color: #F6EBEB;
+        border: none;
+        border-radius: 8px;
+      }
+
+      fieldset {
+        border-color: #E6E1E0;
+      }
+
+    </style>
+    <script type="text/javascript">
+      document.addEventListener('DOMContentLoaded', () => {
+        let form = document.querySelector('form');
+
+        form.addEventListener('submit', event => {
+          event.preventDefault();
+          let form = document.querySelector('form');
+          let data = new FormData(form);
+
+          let request = new XMLHttpRequest();
+          request.open('POST', form.action);
+
+          request.addEventListener('load', event => {
+            let response;
+            switch(request.status) {
+              case 201:
+                response = JSON.parse(request.response)
+                alert(`Successfully created staff with id ${response.id}`);
+                form.reset();
+                break;
+              case 400:
+                response = request.responseText;
+                alert(response);
+            }
+          });
+
+          request.send(data);
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <form action='http://localhost:3000/api/staff_members' method="post">
+      <fieldset>
+        <label>Email:
+          <input type="text" id="email" name="email">
+        </label>
+        <label>Name:
+          <input type="text" id="name" name="name">
+        </label>
+      </fieldset>
+      <button type="submit" name="button">Submit</button>
+    </form>
+  </body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Getting Schedules</title>
+    <script type="text/javascript">
+      function groupAvailableSchedulePerStaffId(schedules) {
+        let staffAvailability = {};
+
+        schedules.forEach(schedule => {
+
+         if (Object.keys(staffAvailability).includes(String(schedule.staff_id))) {
+           staffAvailability[schedule.staff_id] += 1;
+         } else {
+           staffAvailability[schedule.staff_id] = 1;
+         }
+        });
+
+        return staffAvailability;
+      }
+
+      function getAvailableSchedules() {
+        let request = new XMLHttpRequest();
+        request.open('GET', 'http://localhost:3000/api/schedules')
+        request.timeout = 5000;
+
+        request.addEventListener('load', event => {
+          let schedules = JSON.parse(request.response);
+          let message = '';
+
+          let availableSchedules = schedules.filter(schedule => {
+            return schedule.student_email === null;
+          });
+
+          if (availableSchedules.length > 0) {
+            let staffAvailability = groupAvailableSchedulePerStaffId(availableSchedules);
+
+            for (let staffId in staffAvailability) {
+              message += `staff ${staffId}: ${staffAvailability[staffId]} available appointments\n`;
+            }
+          } else {
+            message = 'There are currently no schedules available for booking';
+          }
+
+          alert(message);
+        });
+
+        request.addEventListener('timeout', () => {
+          alert('The request is taking too long andhas been aborted.')
+        });
+
+        request.addEventListener('loadend', event => {
+          alert('Request Completed.');
+        });
+
+
+        request.send();
+      }
+
+      getAvailableSchedules();
+    </script>
+  </head>
+  <body>
+  </body>
+</html>
