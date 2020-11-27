@@ -3,50 +3,24 @@
   <head>
     <meta charset="utf-8">
     <title>Handlebars Practice</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.6/handlebars.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
-    <script id="post" type="text/x-handlebars">
-      <article>
-        <h1>{{title}}</h1>
-        <p><time>Posted on {{published}}</time></p>
-        {{{body}}}
-        <footer>
-          {{> tagsPartial}}
-        </footer>
-      </article>
-    </script>
-
-    <script id="tags-partial" type="text/x-handlebars">
-      <p>
-        Tags:
-        {{#each tags}}
-          <strong>{{this}}</strong>
-        {{/each}}
-      </p>
-    </script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.6/handlebars.min.js"></script>
     <script type="text/javascript">
-      var post = {
-        title: 'Lorem ipsum dolor sit amet',
-        published: 'April 1, 2015',
-        body: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit.',
-        tags: ['Food', 'Cooking', 'Vegetables'],
-      };
-
-      post.body = "<p>" + post.body + "</p>";
-
-      var posts = [post, {nothing: ''}];
-
-      Handlebars.registerPartial("tagsPartial", $("#tags-partial").html());
-
-      $(function() {
-        let $post = $("#post").html();
-        let $template = Handlebars.compile($post);
-        $("body").append($template(post));
+      document.addEventListener("DOMContentLoaded", () => {
+        let template = document.getElementById('handlebars-demo').innerHTML;
+        let context = {name: "Jeremy", occupation: "software engineer"};
+        let templateScript = Handlebars.compile(template);
+        let html = templateScript(context);
+        debugger;
+        // $(document.body).append(html);
       });
     </script>
   </head>
   <body>
+    <script type="text/x-handlebars-template" id="handlebars-demo">
+      <div>
+        My name is {{name}}. I am a {{occupation}}.
+      </div>
+    </script>
   </body>
 </html>
