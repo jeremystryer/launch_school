@@ -37,45 +37,51 @@ document.addEventListener('DOMContentLoaded', () => {
     displayMessage: function(msg) {
       message.innerText = msg;
     },
-    init: function() {
-      this.createBlanksForLetters();
-    }
-  }
 
-  let game = new Game();
+    usedLetter: function usedLetter(entry) {
+      entry = entry.toUpperCase();
+      return this.letters_guessed.includes(entry);
+    },
 
-  document.addEventListener('keyup', function acceptInput(event) {
-    const VALUE = getInputValue(event);
+    recordGuessedLetter: function(entry) {
+      this.addLetterToLettersGuessedCollection(entry);
+      this.showGuessedLetter(entry);
+    },
 
-    if (invalidInput(VALUE) || usedLetter(VALUE)) return;
-    recordGuessedLetter(VALUE);
+    addLetterToLettersGuessedCollection: function(entry) {
+      this.letters_guessed.push(entry.toUpperCase());
+    },
 
-    if (incorrectGuess(VALUE)) {
-      incrementWrongCount();
-      dropApple();
+    showGuessedLetter: function(entry) {
+      let span = document.createElement('span');
+      let guesses = document.getElementById('guesses');
+      span.innerText = entry;
+      guesses.insertAdjacentElement('beforeend', span);
+    },
 
-      if (game.wrongGuesses === game.maxWrongGuesses) {
-        document.removeEventListener('keyup', acceptInput);
-        replay.innerText = 'Play again?';
-      }
-    } else {
-      fillInSpaces(VALUE);
-    }
+    incorrectGuess: function(entry) {
+      return !this.word.includes(entry.toUpperCase());
+    },
 
-    if (wonGame()) {
-      document.removeEventListener('keyup', acceptInput);
-      replay.innerText = 'Play again?';
-    }
-  });
+    incrementWrongCount: function() {
+      this.wrongGuesses += 1;
+    },
 
-  replay.addEventListener('click', event => {
-    event.preventDefault();
-    game = new Game();
-  });
+   fillInSpaces: function(entry) {
+    // modify spaces variable so that separate lines variable where i isolate spans from h2 element is not needed
 
-  // HELPER FUNCTIONS
+    let lines = spaces.querySelectorAll('span');
+    let matchingLettersIndices = this.findMatchingLetters(entry);
 
-  function dropApple() {
+    // populate spaces with entry at indices listed in matchingLettersIndices array
+
+    matchingLettersIndices.forEach(index => {
+      // modify so that spaces variable can be used instead of lines
+      [...lines][index].innerText = entry;
+    });
+  },
+
+  dropApple: function() {
     let apples = document.getElementById('apples');
 
     if ([...apples.classList].includes("guess_1")) {
@@ -96,73 +102,73 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       apples.classList.add("guess_1");
     }
-  }
+  },
 
-  function recordGuessedLetter(entry) {
-    function addLetterToLettersGuessedCollection() {
-      game.letters_guessed.push(entry.toUpperCase());
-    }
-
-    function showGuessedLetter() {
-      let span = document.createElement('span');
-      let guesses = document.getElementById('guesses');
-      span.innerText = entry;
-      guesses.insertAdjacentElement('beforeend', span);
-    }
-
-    addLetterToLettersGuessedCollection();
-    showGuessedLetter();
-  }
-
-  function wonGame() {
-    let lines = spaces.querySelectorAll('span');
-    return [...lines].every(line => line.innerText != "");
-  }
-
-  function fillInSpaces(entry) {
-    // modify spaces variable so that separate lines variable where i isolate spans from h2 element is not needed
-
-    let lines = spaces.querySelectorAll('span');
-    let matchingLettersIndices = findMatchingLetters(entry);
-
-    // populate spaces with entry at indices listed in matchingLettersIndices array
-
-    matchingLettersIndices.forEach(index => {
-      // modify so that spaces variable can be used instead of lines
-      [...lines][index].innerText = entry;
-    });
-  }
-
-  function findMatchingLetters(entry) {
-    return game.word.reduce(function(acc, currentValue, index) {
+  findMatchingLetters: function(entry) {
+    return this.word.reduce(function(acc, currentValue, index) {
       if (currentValue === entry) {
         acc.push(index);
       }
 
       return acc;
     }, []);
+  },
+
+  wonGame: function() {
+    let lines = spaces.querySelectorAll('span');
+    return [...lines].every(line => line.innerText != "");
+  },
+
+  processGuess: function(event) {
+    const VALUE = getInputValue(event);
+
+    if (invalidInput(VALUE) || this.usedLetter(VALUE)) return;
+    this.recordGuessedLetter(VALUE);
+
+    if (this.incorrectGuess(VALUE)) {
+      this.incrementWrongCount();
+      this.dropApple();
+
+      if (this.wrongGuesses === this.maxWrongGuesses) {
+        // document.removeEventListener('keyup', acceptInput);
+        this.unbind();
+        message.innerText = "You lost!";
+      }
+    } else {
+      this.fillInSpaces(VALUE);
+    }
+
+    if (this.wonGame()) {
+      // document.removeEventListener('keyup', acceptInput);
+      this.unbind();
+      message.innerText = "You won!";
+    }
+  },
+
+  bind: function() {
+    this.processGuessHandler = (e) => this.processGuess(e);
+    document.addEventListener("keyup", this.processGuessHandler);
+  },
+
+  unbind: function() {
+    document.removeEventListener("keyup", this.processGuessHandler);
+  },
+
+  init: function() {
+    this.bind();
+    this.createBlanksForLetters();
   }
+}
+
+  new Game();
 
   function invalidInput(entry) {
     const UNACCEPTABLE_INPUT_REGEX = /[^a-z]/i;
     return UNACCEPTABLE_INPUT_REGEX.test(entry);
   }
 
-  function usedLetter(entry) {
-    entry = entry.toUpperCase();
-    return game.letters_guessed.includes(entry);
-  }
-
   function getInputValue(entry) {
     let key = 'which' in event ? event.which : event.keyCode;
     return String.fromCharCode(key);
-  }
-
-  function incorrectGuess(entry) {
-    return !game.word.includes(entry.toUpperCase());
-  }
-
-  function incrementWrongCount() {
-    game.wrongGuesses += 1;
   }
 });
