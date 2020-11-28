@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let message = document.getElementById('message');
   let spaces = document.getElementById('spaces');
   let replay = document.getElementById('replay');
+  let guesses = document.getElementById('guesses');
 
   let randomWord = function() {
     let words = ['APPLE', 'BANANA', 'ORANGE', 'PEAR'];
@@ -54,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     showGuessedLetter: function(entry) {
       let span = document.createElement('span');
-      let guesses = document.getElementById('guesses');
+
       span.innerText = entry;
       guesses.insertAdjacentElement('beforeend', span);
     },
@@ -84,24 +85,8 @@ document.addEventListener('DOMContentLoaded', () => {
   dropApple: function() {
     let apples = document.getElementById('apples');
 
-    if ([...apples.classList].includes("guess_1")) {
-      apples.classList.remove("guess_1");
-      apples.classList.add("guess_2");
-    } else if ([...apples.classList].includes("guess_2")) {
-      apples.classList.remove("guess_2");
-      apples.classList.add("guess_3");
-    } else if ([...apples.classList].includes("guess_3")) {
-      apples.classList.remove("guess_3");
-      apples.classList.add("guess_4");
-    } else if ([...apples.classList].includes("guess_4")) {
-      apples.classList.remove("guess_4");
-      apples.classList.add("guess_5");
-    } else if ([...apples.classList].includes("guess_5")) {
-      apples.classList.remove("guess_5");
-      apples.classList.add("guess_6");
-    } else {
-      apples.classList.add("guess_1");
-    }
+    apples.classList.remove(...apples.classList);
+    apples.classList.add("guess_" + this.wrongGuesses);
   },
 
   findMatchingLetters: function(entry) {
@@ -120,9 +105,9 @@ document.addEventListener('DOMContentLoaded', () => {
   },
 
   processGuess: function(event) {
-    const VALUE = getInputValue(event);
+    const VALUE = this.getInputValue(event);
 
-    if (invalidInput(VALUE) || this.usedLetter(VALUE)) return;
+    if (this.invalidInput(VALUE) || this.usedLetter(VALUE)) return;
     this.recordGuessedLetter(VALUE);
 
     if (this.incorrectGuess(VALUE)) {
@@ -130,19 +115,43 @@ document.addEventListener('DOMContentLoaded', () => {
       this.dropApple();
 
       if (this.wrongGuesses === this.maxWrongGuesses) {
-        // document.removeEventListener('keyup', acceptInput);
         this.unbind();
         message.innerText = "You lost!";
+        replay.innerText = "Play again?"
       }
     } else {
       this.fillInSpaces(VALUE);
     }
 
     if (this.wonGame()) {
-      // document.removeEventListener('keyup', acceptInput);
       this.unbind();
       message.innerText = "You won!";
+      replay.innerText = "Play again?"
     }
+  },
+
+  reset: function() {
+    replay.innerText = '';
+    message.innerText = '';
+    apples.classList.remove(...apples.classList);
+
+    [...spaces.children].forEach(child => {
+      if (child.nodeName === 'SPAN') child.parentNode.removeChild(child);
+    });
+
+    [...guesses.children].forEach(child => {
+      if (child.nodeName === 'SPAN') child.parentNode.removeChild(child);
+    });
+  },
+
+  invalidInput: function(entry) {
+    const UNACCEPTABLE_INPUT_REGEX = /[^a-z]/i;
+    return UNACCEPTABLE_INPUT_REGEX.test(entry);
+  },
+
+  getInputValue: function(entry) {
+    let key = 'which' in event ? event.which : event.keyCode;
+    return String.fromCharCode(key);
   },
 
   bind: function() {
@@ -155,6 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
   },
 
   init: function() {
+    this.reset();
     this.bind();
     this.createBlanksForLetters();
   }
@@ -162,13 +172,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   new Game();
 
-  function invalidInput(entry) {
-    const UNACCEPTABLE_INPUT_REGEX = /[^a-z]/i;
-    return UNACCEPTABLE_INPUT_REGEX.test(entry);
-  }
-
-  function getInputValue(entry) {
-    let key = 'which' in event ? event.which : event.keyCode;
-    return String.fromCharCode(key);
-  }
+  replay.addEventListener('click', event => {
+    event.preventDefault();
+    new Game();
+  });
 });
