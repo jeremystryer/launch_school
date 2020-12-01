@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', event => {
       photos = json;
       renderPhotos();
       renderPhotoInformation(photos[0].id);
+      getCommentsFor(photos[0].id)
   });
 
   function renderPhotos() {
@@ -29,5 +30,14 @@ document.addEventListener('DOMContentLoaded', event => {
     })[0];
     let header = document.querySelector("section > header");
     header.insertAdjacentHTML('beforeend', templates.photo_information(photo));
+  }
+
+  function getCommentsFor(idx) {
+    fetch("/comments?photo_id=" + idx)
+      .then(response => response.json())
+      .then(comment_json => {
+        let comments_list = document.querySelector("#comments > ul");
+        comments_list.insertAdjacentHTML('beforeend', templates.photo_comments({ photo_comments: comment_json}));
+    });
   }
 });
