@@ -1,33 +1,33 @@
-$(function() {
-  let slides = document.getElementById("slides");
+document.addEventListener('DOMContentLoaded', event => {
+  const templates = {};
+  let photos;
 
-  let idGenerator = (function() {
-    let id = 0;
-
-    return function() {
-      return id += 1;
-    }
-  })();
-
-  $.ajax({
-    method: "GET",
-    url: "/photos",
-    dataType: "json",
-  })
-    .done(function(json) {
-      json.forEach(obj => {
-        let figure = document.createElement('figure');
-        let image = document.createElement('img');
-        let figcaption = document.createElement('figcaption');
-
-        figure.setAttribute('data-id', idGenerator());
-        image.setAttribute('src', obj.src);
-        figcaption.innerText = obj.caption;
-
-        figure.insertAdjacentElement('afterbegin', image);
-        figure.insertAdjacentElement('beforeend', figcaption);
-
-        slides.insertAdjacentElement('beforeend', figure);
-      });
+  document.querySelectorAll("script[type='text/x-handlebars']").forEach(tmpl => {
+    templates[tmpl["id"]] = Handlebars.compile(tmpl["innerHTML"]);
   });
+
+  document.querySelectorAll("[data-type=partial]").forEach(tmpl => {
+    Handlebars.registerPartial(tmpl["id"], tmpl["innerHTML"]);
+  });
+
+  fetch("/photos")
+    .then(response => response.json())
+    .then(json => {
+      photos = json;
+      renderPhotos();
+      renderPhotoInformation(photos[0].id);
+  });
+
+  function renderPhotos() {
+    let slides = document.getElementById('slides');
+    slides.insertAdjacentHTML('beforeend', templates.photos({ photos: photos }));
+  }
+
+  function renderPhotoInformation(idx) {
+    let photo = photos.filter(function(item) {
+      return item.id === idx;
+    })[0];
+    let header = document.querySelector("section > header");
+    header.insertAdjacentHTML('beforeend', templates.photo_information(photo));
+  }
 });
