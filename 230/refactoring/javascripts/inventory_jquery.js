@@ -22,6 +22,7 @@ var inventory;
       };
       this.collection.push(item);
 
+      debugger;
       return item;
     },
     remove: function(idx) {
@@ -74,7 +75,7 @@ var inventory;
       this.update($item);
     },
     bindEvents: function() {
-      $("#add_item").on("click", $.proxy(this.newItem, this));
+      // $("#add_item").on("click", $.proxy(this.newItem, this));
       $("#inventory").on("click", "a.delete", $.proxy(this.deleteItem, this));
       $("#inventory").on("blur", ":input", $.proxy(this.updateItem, this));
     },
@@ -86,4 +87,8 @@ var inventory;
   };
 })();
 
-$($.proxy(inventory.init, inventory));
+// $($.proxy(inventory.init, inventory));
+
+document.addEventListener("DOMContentLoaded", function() {
+  inventory.init();
+});

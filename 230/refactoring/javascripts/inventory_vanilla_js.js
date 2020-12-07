@@ -1,22 +1,21 @@
-var inventory;
+let inventory;
 
 (function() {
   inventory = {
     lastId: 0,
     collection: [],
     setDate: function() {
-      var date = new Date();
-      document.getElementById("order_date").innerText = date.toUTCString();
+      let date = new Date();
+      document.querySelector("#order_date").textContent = date.toUTCString();
     },
     cacheTemplate: function() {
-      // jQuery.remove() returns HTML of node, but JS remove() does not
-      let inventoryItem = document.getElementById("inventory_item");
-      this.template = inventoryItem.innerHTML;
-      inventoryItem.remove();
+      let iTmpl = document.querySelector('#inventory_item');
+      this.template = Handlebars.compile(iTmpl.innerHTML);
+      iTmpl.remove();
     },
     add: function() {
       this.lastId++;
-      var item = {
+      let item = {
         id: this.lastId,
         name: "",
         stock_number: "",
@@ -32,7 +31,7 @@ var inventory;
       });
     },
     get: function(id) {
-      var found_item;
+      let found_item;
 
       this.collection.forEach(function(item) {
         if (item.id === id) {
@@ -43,49 +42,47 @@ var inventory;
 
       return found_item;
     },
-    update: function($item) {
-      var id = this.findID($item),
-          item = this.get(id);
+    update: function(itemRow) {
+      let id = this.findID(itemRow);
+      let item = this.get(id);
 
-      item.name = $item.find("[name^=item_name]").val();
-      item.stock_number = $item.find("[name^=item_stock_number]").val();
-      item.quantity = $item.find("[name^=item_quantity]").val();
+      item.name = itemRow.querySelector("[name^=item_name]").value;
+      item.stock_number = itemRow.querySelector("[name^=item_stock_number]").value;
+      item.quantity = itemRow.querySelector("[name^=item_quantity]").value;
     },
     newItem: function(e) {
       e.preventDefault();
-      var item = this.add(),
-          $item = $(this.template.replace(/ID/g, item.id));
-
-      $("#inventory").append($item);
+      let item = this.add();
+      document.querySelector('#inventory')
+              .insertAdjacentHTML('beforeend', this.template({ id: item.id }));
     },
     findParent: function(e) {
-      return $(e.target).closest("tr");
+      return e.target.closest("tr");
     },
-    findID: function($item) {
-      return +$item.find("input[type=hidden]").val();
+    findID: function(item) {
+      return +item.querySelector('input[type=hidden]').value;
     },
     deleteItem: function(e) {
       e.preventDefault();
-      var $item = this.findParent(e).remove();
-
-      this.remove(this.findID($item));
+      if (e.target.classList.contains('delete')) {
+        let item = this.findParent(e);
+        this.remove(this.findID(item));
+        item.remove();
+      }
     },
     updateItem: function(e) {
-      var $item = this.findParent(e);
+      if (event.target.tagName == 'INPUT') {
+        let item = this.findParent(e);
 
-      this.update($item);
+        this.update(item);
+      }
     },
     bindEvents: function() {
-      // document.getElementById("add_item")
-      //         .addEventListener("click", this.newItem.bind(this));
-      // document.getElementById("inventory")
-      //         .addEventListener("click", this.deleteItem.bind(this));
-      // document.getElementById("inventory")
-      //         .addEventListener("blur", this.updateItem.bind(this));
-
-      $("#add_item").on("click", $.proxy(this.newItem, this));
-      $("#inventory").on("click", "a.delete", $.proxy(this.deleteItem, this));
-      $("#inventory").on("blur", ":input", $.proxy(this.updateItem, this));
+      document.querySelector("#add_item").addEventListener('click', this.newItem.bind(this));
+      document.querySelector("#inventory")
+              .addEventListener('click', this.deleteItem.bind(this));
+      document.querySelector("#inventory")
+              .addEventListener('focusout', this.updateItem.bind(this));
     },
     init: function() {
       this.setDate();
@@ -95,4 +92,4 @@ var inventory;
   };
 })();
 
-$($.proxy(inventory.init, inventory));
+document.addEventListener('DOMContentLoaded', e => inventory.init.bind(inventory)());
