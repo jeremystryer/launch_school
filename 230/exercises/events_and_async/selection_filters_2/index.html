@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Selection Filters</title>
+    <script type="text/javascript">
+      const CLASS_TO_ANIMALS = {
+        Vertebrate: ['Bear', 'Turtle', 'Whale', 'Salmon', 'Ostrich'],
+        'Warm-blooded': ['Bear', 'Whale', 'Ostrich'],
+        'Cold-blooded': ['Salmon', 'Turtle'],
+        Mammal: ['Bear', 'Whale'],
+        Bird: ['Ostrich'],
+      }
+
+      const ANIMALS_TO_CLASS = {
+        Bear: ['Vertebrate', 'Warm-blooded', 'Mammal'],
+        Turtle: ['Vertebrate', 'Cold-blooded'],
+        Whale: ['Vertebrate', 'Warm-blooded', 'Mammal'],
+        Salmon: ['Vertebrate', 'Cold-blooded'],
+        Ostrich: ['Vertebrate', 'Warm-blooded', 'Bird'],
+      }
+
+      const deleteOptions = function(group) {
+        [...group.children].forEach(option => option.remove());
+      }
+
+      const createAvailableOptions = function(group, options) {
+        options.forEach(option => {
+          let optionElement = document.createElement('option');
+          optionElement.value = option;
+          optionElement.innerText = option;
+
+          group.insertAdjacentElement('beforeend', optionElement);
+        });
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        let form = document.querySelector('form');
+
+        form.addEventListener('change', event => {
+          let selectionGroup = event.target;
+          let selection = selectionGroup.value;
+          let classifications = document.getElementById('animal-classifications');
+          let animals = document.getElementById('animals');
+          let matches;
+
+          if (selectionGroup === classifications) {
+            matches = CLASS_TO_ANIMALS[selection];
+            otherGroup = animals
+          } else {
+            matches = ANIMALS_TO_CLASS[selection];
+            otherGroup = classifications
+          }
+
+          deleteOptions(otherGroup);
+          createAvailableOptions(otherGroup, matches);
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <form id="selection-filters" method="post" action="#">
+      <select id="animal-classifications">
+        <option value="Classifications" selected>Classifications</option>
+        <option value="Vertebrate">Vertebrate</option>
+        <option value="Warm-blooded">Warm-blooded</option>
+        <option value="Cold-blooded">Cold-blooded</option>
+        <option value="Mammal">Mammal</option>
+        <option value="Bird">Bird</option>
+      </select>
+      <select id="animals">
+        <option value="Animals" selected>Animals</option>
+        <option value="Bear">Bear</option>
+        <option value="Turtle">Turtle</option>
+        <option value="Whale">Whale</option>
+        <option value="Salmon">Salmon</option>
+        <option value="Ostrich">Ostrich</option>
+      </select>
+      <button id="clear">Clear</button>
+    </form>
+  </body>
+</html>
