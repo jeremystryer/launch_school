@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Exotic Animals</title>
+    <style media="screen">
+      body {
+        background-color: #5FAAD6;
+      }
+
+      main {
+        margin: 35px;
+      }
+
+      h1 {
+        text-align: center;
+        color: #FFFFFF;
+      }
+
+      ul {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        margin: 60px;
+        list-style-type: none;
+      }
+
+      li {
+        border: solid 5px #FFFFFF;
+      }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript">
+
+      document.addEventListener('DOMContentLoaded', () => {
+        let listArea = document.querySelector('ul');
+
+        function repeat(callback, n) {
+          for (let i = 0; i < n; i += 1) {
+            callback();
+          }
+        }
+
+        function Gallery() {
+          this.caption = "This is a dog"
+        }
+
+        Gallery.prototype = {
+          getImages() {
+            repeat(this.makeRequest.bind(this), 8);
+          },
+
+          makeRequest() {
+            $.ajax({
+              url: "https://dog.ceo/api/breeds/image/random",
+              type: 'GET',
+              dataType: "json",
+            })
+             .done((e) => {
+               let randomImage = e.message;
+               this.renderImage(randomImage);
+             })
+           },
+
+          renderImage(image) {
+            let imageNode = document.createElement('img');
+            imageNode.setAttribute('src', image);
+            imageNode.setAttribute('width', '300px');
+            imageNode.setAttribute('height', '300px');
+            imageNode.style.display = 'flex';
+            let listNode = document.createElement('li');
+            listNode.appendChild(imageNode);
+            listArea.insertAdjacentElement('afterbegin', listNode);
+          },
+
+          init() {
+            this.getImages();
+          }
+        }
+
+         new Gallery().init();
+      });
+    </script>
+  </head>
+  <body>
+    <main>
+      <h1>Exotic Dogs!</h1>
+      <ul></ul>
+    </main>
+  </body>
+</html>
