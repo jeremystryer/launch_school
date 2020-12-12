@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <title>Stopwatch</title>
+    <meta charset='utf-8' />
+    <style>
+      html, body {
+        background-color: #5FAAD6;
+        color: white;
+        font: 50px Arial Helvetica sans-serif bold;
+      }
+
+      main {
+        margin-top: 300px;
+      }
+
+      div {
+        display: block;
+        text-align: center;
+      }
+
+      button {
+        font-size: 20px;
+        margin: 20px;
+        padding: 10px;
+      }
+    </style>
+    <script type="text/javascript">
+      document.addEventListener('DOMContentLoaded', () => {
+        let startBtn = document.getElementById("start-stop");
+        let resetBtn = document.getElementById("reset");
+        let hoursValue = document.getElementById("hours");
+        let minutesValue = document.getElementById("minutes");
+        let secondsValue = document.getElementById("seconds");
+        let centisecondsValue = document.getElementById("centiseconds");
+        let timer;
+
+        class Stopwatch {
+          constructor() {
+            this.init();
+            this.displayNumbers();
+            this.addListeners();
+          }
+
+          init() {
+            this.hours = 0;
+            this.minutes = 0;
+            this.seconds = 0;
+            this.centiseconds = 0;
+          }
+
+          displayNumbers() {
+            hoursValue.textContent = this.padNumbers(this.hours);
+            minutesValue.textContent = this.padNumbers(this.minutes);
+            secondsValue.textContent = this.padNumbers(this.seconds);
+            centisecondsValue.textContent = this.padNumbers(this.centiseconds);
+          }
+
+          padNumbers(num) {
+            let stringValue = String(num);
+            if (stringValue.length === 1) {
+              return "0" + stringValue;
+            } else {
+              return stringValue;
+            }
+          }
+
+          addListeners() {
+            let func = () => {
+              let incrementcentiseconds = () => {
+                if (this.centiseconds < 99) {
+                  this.centiseconds += 1;
+                  this.displayNumbers();
+                } else if (this.centiseconds === 99) {
+                  this.centiseconds = 0;
+                  this.displayNumbers();
+                  incrementseconds();
+                }
+              }
+
+              let incrementseconds = () => {
+                if (this.seconds < 59) {
+                  this.seconds += 1;
+                  this.displayNumbers();
+                } else if (this.seconds === 59) {
+                  this.seconds = 0;
+                  this.displayNumbers();
+                  incrementminutes();
+                }
+              }
+
+              let incrementminutes = () => {
+                if (this.minutes < 59) {
+                  this.minutes += 1;
+                  this.displayNumbers();
+                } else if (this.minutes === 59) {
+                  this.minutes = 0;
+                  this.displayNumbers();
+                  incrementhours();
+                }
+              }
+
+              let incrementhours = () => {
+                if (this.hours < 59) {
+                  this.hours += 1;
+                  this.displayNumbers();
+                } else if (this.seconds === 99) {
+                  alert('You have taken too long!')
+                }
+              }
+
+              incrementcentiseconds();
+            }
+
+            startBtn.addEventListener('click', event => {
+              if (event.target.className === "start") {
+                timer = setInterval(func, 10)
+                event.target.classList.toggle('start');
+                event.target.textContent = 'Stop';
+              } else {
+                clearInterval(timer);
+                event.target.classList.toggle('start');
+                event.target.textContent = 'Start';
+              }
+            });
+
+            resetBtn.addEventListener('click', event => {
+              clearInterval(timer);
+              this.resetCounters();
+              startBtn.className = 'start';
+              startBtn.textContent = 'Start';
+            });
+          }
+
+          resetCounters() {
+            this.init();
+            this.displayNumbers();
+          }
+        }
+
+        new Stopwatch();
+      });
+    </script>
+  </head>
+  <body>
+    <main>
+      <div id="counter-container">
+        <span id="hours"></span>:<span id="minutes"></span>:<span id="seconds"></span>:<span id ="centiseconds"></span>
+      </div>
+      <div id="button-container">
+        <button id="start-stop" class="start">Start</button><button id="reset">Reset</button>
+      </div>
+    </main>
+  </body>
+</html>
