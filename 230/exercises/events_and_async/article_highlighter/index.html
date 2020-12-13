@@ -17,7 +17,35 @@
       }
     </style>
     <script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  const removeHighlightClass = (el) => {
+    el.classList.remove('highlight');
 
+    for (let i = 0; i < el.children.length; i += 1) {
+      removeHighlightClass(el.children[i]);
+    }
+  }
+
+  document.addEventListener('click', event => {
+    let target = event.target;
+    let main = document.querySelector('main');
+    let articles = document.querySelectorAll("article");
+
+    removeHighlightClass(main);
+
+    if (target.nodeName === "A" ) {
+      let anchorElements = document.querySelectorAll('a');
+      let index = [...anchorElements].indexOf(target);
+      [...articles][index].classList.add('highlight');
+    } else if (target.nodeName === "ARTICLE") {
+      target.classList.add('highlight');
+    } else if (target.parentElement !== null && target.parentElement.nodeName === "ARTICLE") {
+      target.parentElement.classList.add('highlight');
+    } else {
+      main.classList.add('highlight');
+    }
+  });
+});
     </script>
   </head>
   <body>
@@ -65,5 +93,5 @@
         Phasellus elit enim, fermentum et finibus ut, commodo non lorem. Aliquam bibendum sapien at arcu semper, eget ultrices elit lacinia. In sed nulla quis massa sagittis cursus eu tempor odio. Nulla at imperdiet ex. Maecenas hendrerit ornare dui, nec porta dolor aliquam quis. Curabitur sollicitudin enim vel vulputate suscipit. Quisque vitae lobortis velit. Maecenas a dui pretium, suscipit elit non, gravida odio. Etiam feugiat a turpis vitae sagittis. Etiam ac nulla id metus semper aliquam eget vitae justo. Vivamus sed odio ornare, commodo tortor eget, pretium metus. Sed a aliquam ligula. Nullam a quam dui. Cras hendrerit viverra nisi, et faucibus orci elementum at.</p>
       </article>
     </main>
-  <body>
+  </body>
 </html>
