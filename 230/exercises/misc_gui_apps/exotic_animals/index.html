@@ -4,88 +4,91 @@
     <meta charset="utf-8">
     <title>Exotic Animals</title>
     <style media="screen">
-      body {
-        background-color: #5FAAD6;
-      }
-
-      main {
-        margin: 35px;
-      }
-
-      h1 {
-        text-align: center;
-        color: #FFFFFF;
-      }
-
-      ul {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 10px;
-        margin: 60px;
-        list-style-type: none;
-      }
-
-      li {
-        border: solid 5px #FFFFFF;
+      figcaption {
+        display: none;
       }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script type="text/javascript">
-
       document.addEventListener('DOMContentLoaded', () => {
-        let listArea = document.querySelector('ul');
-
-        function repeat(callback, n) {
-          for (let i = 0; i < n; i += 1) {
-            callback();
-          }
-        }
-
         function Gallery() {
-          this.caption = "This is a dog"
-        }
+          this.init();
+        };
 
         Gallery.prototype = {
-          getImages() {
-            repeat(this.makeRequest.bind(this), 8);
+          init: function() {
+            this.bindEvents();
+            this.addEventListener();
           },
 
-          makeRequest() {
-            $.ajax({
-              url: "https://dog.ceo/api/breeds/image/random",
-              type: 'GET',
-              dataType: "json",
-            })
-             .done((e) => {
-               let randomImage = e.message;
-               this.renderImage(randomImage);
-             })
-           },
-
-          renderImage(image) {
-            let imageNode = document.createElement('img');
-            imageNode.setAttribute('src', image);
-            imageNode.setAttribute('width', '300px');
-            imageNode.setAttribute('height', '300px');
-            imageNode.style.display = 'flex';
-            let listNode = document.createElement('li');
-            listNode.appendChild(imageNode);
-            listArea.insertAdjacentElement('afterbegin', listNode);
+          bindEvents: function() {
+            this.trackCursorTimeForGallery = this.trackCursorTime.bind(this);
+            this.showToolTipForGallery = this.showTooltip.bind(this);
           },
 
-          init() {
-            this.getImages();
-          }
+          addEventListener: function() {
+            document.addEventListener('mouseover', this.trackCursorTimeForGallery);
+          },
+
+          trackCursorTime: function(event) {
+            if (event.target.nodeName === 'IMG') {
+              let image = event.target;
+
+              let func = () => {
+                this.showToolTipForGallery(image);
+              }
+
+              let timer = setTimeout(func, 2000);
+              image.addEventListener('mouseout', event => {
+                clearTimeout(timer);
+                image.nextElementSibling.style.display = "none";
+              });
+            }
+          },
+
+          showTooltip: function(img) {
+            let figure = img.parentElement;
+            let figcaption = img.nextElementSibling;
+
+            figcaption.style.display = "block";
+          },
         }
 
-         new Gallery().init();
+        new Gallery();
       });
     </script>
   </head>
   <body>
-    <main>
-      <h1>Exotic Dogs!</h1>
-      <ul></ul>
-    </main>
+    <figure>
+      <img src="images/quetzal.jpg" alt="">
+      <figcaption class="text-box">This is a quetzal.</figcaption>
+    </figure>
+    <figure>
+      <img src="images/blackbuck.jpg" alt="">
+      <figcaption>This is a blackbuck.</figcaption>
+    </figure>
+    <figure>
+      <img src="images/genet.jpg" alt="">
+      <figcaption>This is a genet.</figcaption>
+    </figure>
+    <figure>
+      <img src="images/golden_pheasant.jpg" alt="">
+      <figcaption>This is a golden pheasant.</figcaption>
+    </figure>
+    <figure>
+      <img src="images/greater_bird_of_paradise.jpg" alt="">
+      <figcaption>This is a greater bird of paradise.</figcaption>
+    </figure>
+    <figure>
+      <img src="images/lined_butterflyfish.jpg" alt="">
+      <figcaption>This is a lined butterflyfish.</figcaption>
+    </figure>
+    <figure>
+      <img src="images/rainbow_lorikeet.jpg" alt="">
+      <figcaption>This is a rainbow lorikeet</figcaption>
+    </figure>
+    <figure>
+      <img src="images/vampire_squid.jpg" alt="">
+      <figcaption>This is a vampire squid.</figcaption>
+    </figure>
   </body>
 </html>
