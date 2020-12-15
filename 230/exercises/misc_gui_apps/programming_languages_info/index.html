@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Programming Languages</title>
+    <style media="screen">
+      html, body {
+        background-color: #5FAAD6;
+      }
+
+      h1 {
+        text-align: center;
+        color: #FFFFFF;
+      }
+
+      main {
+        background-color: #FFFFFF;
+        width: 600px;
+        margin: 0 auto;
+        padding: 15px;
+      }
+
+      button {
+        background-color: #5FAAD6;
+      }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.6/handlebars.min.js"></script>
+    <script type="text/javascript">
+      const languages = [
+        {
+          name: 'Ruby',
+          description: 'Ruby is a dynamic, reflective, object-oriented, ' +
+          'general-purpose programming language. It was designed and developed in the mid-1990s ' +
+          'by Yukihiro Matsumoto in Japan. According to its creator, Ruby was influenced by Perl, ' +
+          'Smalltalk, Eiffel, Ada, and Lisp. It supports multiple programming paradigms, ' +
+          'including functional, object-oriented, and imperative. It also has a dynamic type ' +
+          'system and automatic memory management.'
+        },
+
+        {
+          name: 'JavaScript',
+          description: 'JavaScript is a high-level, dynamic, untyped, and interpreted ' +
+          'programming language. It has been standardized in the ECMAScript language ' +
+          'specification. Alongside HTML and CSS, JavaScript is one of the three core ' +
+          'technologies of World Wide Web content production; the majority of websites employ ' +
+          'it, and all modern Web browsers support it without the need for plug-ins. JavaScript ' +
+          'is prototype-based with first-class functions, making it a multi-paradigm language, ' +
+          'supporting object-oriented, imperative, and functional programming styles.'
+        },
+
+        {
+          name: 'Lisp',
+          description: 'Lisp (historically, LISP) is a family of computer programming languages ' +
+          'with a long history and a distinctive, fully parenthesized prefix notation. ' +
+          'Originally specified in 1958, Lisp is the second-oldest high-level programming ' +
+          'language in widespread use today. Only Fortran is older, by one year. Lisp has changed ' +
+          'since its early days, and many dialects have existed over its history. Today, the best '+
+          'known general-purpose Lisp dialects are Common Lisp and Scheme.'
+        }
+      ];
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const INITIAL_CHAR_COUNT = 120;
+
+        function limitCharCount(collection) {
+          let languagesWithShortDescription = [];
+          collection.forEach(lang => {
+            let langShortDescription = {};
+            langShortDescription.name = lang.name;
+            let shortenedDescription = lang.description.substring(0, INITIAL_CHAR_COUNT);
+            langShortDescription.description = shortenedDescription + " ...";
+            languagesWithShortDescription.push(langShortDescription);
+          });
+
+          return languagesWithShortDescription;
+        }
+
+        let button = document.querySelector("button");
+        let languagesInitialDescription = limitCharCount(languages);
+        let main = document.querySelector('main');
+        let language_info = document.getElementById('language_info');
+
+
+        let script = document.getElementById('handlebars').innerHTML;
+        let templateScript = Handlebars.compile(script);
+        language_info.innerHTML = templateScript(languagesInitialDescription);
+        let descriptions = document.querySelectorAll(".description");
+
+        function changeToLongDescription(langName, langs) {
+          let selectedLanguage = (langs.filter(lang => {
+            return lang.name === langName;
+          }));
+
+          let fullDescription = selectedLanguage[0].description;
+          let remainingDescription = fullDescription.substring(INITIAL_CHAR_COUNT, fullDescription.length);
+          return remainingDescription;
+        }
+
+        function changeToShortDescription(langName, langs) {
+          let selectedLanguage = (langs.filter(lang => {
+            return lang.name === langName;
+          }));
+
+          let initialDescription = selectedLanguage[0].description;
+          return initialDescription;
+        }
+
+        function showMore(btn) {
+          btn.textContent = "Show Less";
+          let description = btn.previousElementSibling;
+          let name = description.previousElementSibling.textContent;
+
+          description.textContent = description.textContent.substring(0, 120);
+          description.textContent += changeToLongDescription(name, languages);
+        }
+
+        function showLess(btn) {
+          btn.textContent = "Show More";
+
+          let description = btn.previousElementSibling;
+          let name = description.previousElementSibling.textContent;
+
+          description.textContent = changeToShortDescription(name, languagesInitialDescription);
+        }
+
+
+
+        document.addEventListener("click", event => {
+          if (event.target.nodeName === "BUTTON") {
+            event.target.className === "more" ? showMore(event.target) : showLess(event.target);
+            event.target.classList.toggle("more");
+          }
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <h1>Programming Languages</h1>
+    <main>
+      <article id="language_info"></article>
+    </main>
+    <script type="text/x-handlebars" id="handlebars">
+      {{#each this}}
+        <h2>{{this.name}}</h2>
+        <p class="description">{{this.description}}</p>
+        <button type="button" name="button" class="more">Show More</button>
+      {{/each}}
+    </script>
+  </body>
+</html>
