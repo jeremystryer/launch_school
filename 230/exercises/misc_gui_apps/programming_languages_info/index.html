@@ -60,77 +60,90 @@
       ];
 
       document.addEventListener('DOMContentLoaded', () => {
-        const INITIAL_CHAR_COUNT = 120;
-
-        function limitCharCount(collection) {
-          let languagesWithShortDescription = [];
-          collection.forEach(lang => {
-            let langShortDescription = {};
-            langShortDescription.name = lang.name;
-            let shortenedDescription = lang.description.substring(0, INITIAL_CHAR_COUNT);
-            langShortDescription.description = shortenedDescription + " ...";
-            languagesWithShortDescription.push(langShortDescription);
-          });
-
-          return languagesWithShortDescription;
+        function App() {
+          this.initial_char_count = 120;
+          this.languagesInitialDescription = this.limitCharCount(languages);
+          this.init();
         }
 
-        let button = document.querySelector("button");
-        let languagesInitialDescription = limitCharCount(languages);
-        let main = document.querySelector('main');
-        let language_info = document.getElementById('language_info');
+        App.prototype = {
+          init: function() {
+            this.renderPage();
+            this.addEventListeners();
+          },
 
+          limitCharCount: function(collection) {
+            let languagesWithShortDescription = [];
+            collection.forEach(lang => {
+              let langShortDescription = {};
+              langShortDescription.name = lang.name;
+              let shortenedDescription = lang.description.substring(0, this.initial_char_count);
+              langShortDescription.description = shortenedDescription + " ...";
+              languagesWithShortDescription.push(langShortDescription);
+            });
 
-        let script = document.getElementById('handlebars').innerHTML;
-        let templateScript = Handlebars.compile(script);
-        language_info.innerHTML = templateScript(languagesInitialDescription);
-        let descriptions = document.querySelectorAll(".description");
+            return languagesWithShortDescription;
+          },
 
-        function changeToLongDescription(langName, langs) {
-          let selectedLanguage = (langs.filter(lang => {
-            return lang.name === langName;
-          }));
+          changeToLongDescription: function(langName, langs) {
+            let selectedLanguage = (langs.filter(lang => {
+              return lang.name === langName;
+            }));
 
-          let fullDescription = selectedLanguage[0].description;
-          let remainingDescription = fullDescription.substring(INITIAL_CHAR_COUNT, fullDescription.length);
-          return remainingDescription;
+            let fullDescription = selectedLanguage[0].description;
+            let remainingDescription = fullDescription.substring(this.initial_char_count, fullDescription.length);
+            return remainingDescription;
+          },
+
+          changeToShortDescription: function(langName, langs) {
+            let selectedLanguage = (langs.filter(lang => {
+              return lang.name === langName;
+            }));
+
+            let initialDescription = selectedLanguage[0].description;
+            return initialDescription;
+          },
+
+          showMore: function(btn) {
+            btn.textContent = "Show Less";
+            let description = btn.previousElementSibling;
+            let name = description.previousElementSibling.textContent;
+
+            description.textContent = description.textContent.substring(0, 120);
+            description.textContent += this.changeToLongDescription(name, languages);
+          },
+
+          showLess: function(btn) {
+            btn.textContent = "Show More";
+
+            let description = btn.previousElementSibling;
+            let name = description.previousElementSibling.textContent;
+
+            description.textContent = this.changeToShortDescription(name, this.languagesInitialDescription);
+          },
+
+          addEventListeners: function() {
+            document.addEventListener("click", event => {
+              if (event.target.nodeName === "BUTTON") {
+                event.target.className === "more" ? this.showMore(event.target) : this.showLess(event.target);
+                event.target.classList.toggle("more");
+              }
+            });
+          },
+
+          renderPage: function() {
+            let button = document.querySelector("button");
+            let main = document.querySelector('main');
+            let language_info = document.getElementById('language_info');
+
+            let script = document.getElementById('handlebars').innerHTML;
+            let templateScript = Handlebars.compile(script);
+            language_info.innerHTML = templateScript(this.languagesInitialDescription);
+            let descriptions = document.querySelectorAll(".description");
+          },
         }
 
-        function changeToShortDescription(langName, langs) {
-          let selectedLanguage = (langs.filter(lang => {
-            return lang.name === langName;
-          }));
-
-          let initialDescription = selectedLanguage[0].description;
-          return initialDescription;
-        }
-
-        function showMore(btn) {
-          btn.textContent = "Show Less";
-          let description = btn.previousElementSibling;
-          let name = description.previousElementSibling.textContent;
-
-          description.textContent = description.textContent.substring(0, 120);
-          description.textContent += changeToLongDescription(name, languages);
-        }
-
-        function showLess(btn) {
-          btn.textContent = "Show More";
-
-          let description = btn.previousElementSibling;
-          let name = description.previousElementSibling.textContent;
-
-          description.textContent = changeToShortDescription(name, languagesInitialDescription);
-        }
-
-
-
-        document.addEventListener("click", event => {
-          if (event.target.nodeName === "BUTTON") {
-            event.target.className === "more" ? showMore(event.target) : showLess(event.target);
-            event.target.classList.toggle("more");
-          }
-        });
+        new App();
       });
     </script>
   </head>
