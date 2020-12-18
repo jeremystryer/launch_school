@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en-US" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Custom Delete Confirmation Prompt</title>
+    <style media="screen">
+      html, body {
+        background-color: #3E995A;
+      }
+
+      main {
+        margin-top: 50px;
+      }
+
+      h1 {
+        color: #FFFFFF;
+        padding-left: 20px;
+      }
+
+      .todo_box {
+        background-color: #FFFFFF;
+        width: 400px;
+        height: 40px;
+        margin-left: 50px;
+        margin-bottom: 15px;
+        display: block;
+        position: relative;
+      }
+
+      p {
+        display: inline-block;
+      }
+
+      .modal {
+        display: none;
+        background-color: rgba(0, 0, 0, 0.5);
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        padding-top: 150px;
+      }
+
+      .modal-content {
+        background-color: white;
+        position: relative;
+        width: 75%;
+        padding: 20px;
+        margin: auto;
+        text-align: center;
+      }
+
+      .modal-content p {
+        display: block;
+      }
+
+      #closeBtn {
+        float: right;
+        font-size: 24px;
+        font-weight: bold;
+        color: lightgray;
+      }
+
+      #closeBtn:hover {
+        cursor: pointer;
+      }
+
+      .context-menu {
+        background-color: #FFFFFF;
+        width: 30%;
+        display: none;
+        position: absolute;
+      }
+
+      .context-menu ul {
+        list-style-type: none;
+        padding: 5px 0 5px 0;
+      }
+
+      .context-menu ul li {
+        margin: 15px;
+      }
+
+      .context-menu-options {
+        cursor: pointer;
+      }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.6/handlebars.min.js"></script>
+    <script type="text/javascript">
+      document.addEventListener('DOMContentLoaded', () => {
+        function Todos() {
+          this.todos = [
+                { id: 1, title: 'Homework' },
+                { id: 2, title: 'Shopping' },
+                { id: 3, title: 'Calling Mom' },
+                { id: 4, title: 'Coffee with John '}
+              ];
+          this.init();
+        }
+
+        Todos.prototype = {
+          init() {
+            this.processTemplate();
+            this.addEventListeners();
+          },
+
+          processTemplate() {
+            let todosSection = document.getElementById('todosSection');
+            let todos_template = document.getElementById('todos_template').innerHTML;
+            let todos_template_script = Handlebars.compile(todos_template);
+            todosSection.innerHTML = todos_template_script(this.todos);
+          },
+
+          deleteTodo() {
+            this.todos = this.todos.filter(todo => todo.id !== parseInt(this.selectedTodo, 10));
+            this.processTemplate();
+          },
+
+          showContextMenu(menu) {
+            menu.style.display = 'block';
+          },
+
+          addEventListeners() {
+            let deleteBtn = document.querySelector("#delete-button");
+            let todos = document.getElementsByClassName('todo_box');
+            let modal = document.querySelector(".modal");
+            let closeBtn = document.querySelector("#closeBtn");
+            let yesBtn = document.querySelector("#yesBtn");
+            let noBtn = document.querySelector("#noBtn");
+            let contextMenu = document.querySelector(".context-menu");
+
+            document.addEventListener('contextmenu', event => {
+              event.preventDefault();
+
+              if ([...todos].includes(event.target)) {
+
+                contextMenu.style.left = event.pageX + 'px';
+                contextMenu.style.top = event.pageY + 'px';
+                contextMenu.style.display = 'block';
+
+                this.selectedTodo = event.target.firstElementChild.getAttribute('data-id');
+              }
+
+              if ([...todos].includes(event.target.parentElement)) {
+                contextMenu.style.left = event.pageX + 'px';
+                contextMenu.style.top = event.pageY + 'px';
+                contextMenu.style.display = 'block';
+
+                this.selectedTodo = event.target.getAttribute('data-id');
+              }
+            });
+
+            deleteBtn.addEventListener('click', event => {
+              contextMenu.style.display = 'none';
+              modal.style.display = "block";
+            });
+
+            document.addEventListener('click', event => {
+              if (event.target === modal || event.target === noBtn || event.target === closeBtn) {
+                modal.style.display = "none";
+              }
+            });
+
+            yesBtn.addEventListener('click', event => {
+              this.deleteTodo();
+              modal.style.display = "none";
+            });
+          },
+        }
+
+        new Todos();
+      });
+    </script>
+  </head>
+  <body>
+    <main>
+      <h1>Todos</h1>
+      <section id="todosSection"></section>
+
+      <div class="modal">
+        <div class="modal-content">
+          <span id="closeBtn">&times;</span>
+          <p>Are you sure that you want to delete this todo?</p>
+          <button id="yesBtn">Yes</button>
+          <button id="noBtn">No</button>
+        </div>
+      </div>
+
+      <div class="context-menu">
+        <ul>
+          <li class="context-menu-options">Edit Todo</li>
+          <li class="context-menu-options">Show Details</li>
+          <li class="context-menu-options" id="delete-button">Delete</li>
+        </ul>
+      </div>
+    </main>
+
+    <script type="text/x-handlebars" id="todos_template">
+      {{#each this}}
+      <div class="todo_box">
+        <p data-id={{this.id}}>{{this.title}}</p>
+      </div>
+      {{/each}}
+    </script>
+  </body>
+</html>
