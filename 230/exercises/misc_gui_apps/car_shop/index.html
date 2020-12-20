@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Cars for Sale</title>
+    <style media="screen">
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+
+      header {
+        height: 100px;
+        background-color: #E3B30D;
+        color: #FFFFFF;
+      }
+
+      #filter {
+        padding-left: 10px;
+      }
+
+      select {
+        margin-right: 10px;
+      }
+
+      h1 {
+        margin-top: 0;
+        padding: 10px 0 0 10px;
+      }
+
+      main {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+      }
+
+      ul {
+        list-style-type: none;
+      }
+
+      .make-and-model {
+        font-weight: bold;
+      }
+
+      img {
+        height: 125px;
+        width: 175px;
+      }
+
+      .buy-button {
+        background-color: #E3B30D;
+        border: none;
+        padding: 6px;
+        color: #FFFFFF;
+        font-weight: bold;
+        cursor: pointer;
+      }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.6/handlebars.min.js"></script>
+    <script type="text/javascript">
+      document.addEventListener('DOMContentLoaded', () => {
+        class CarInventory {
+          constructor() {
+            this.cars = [
+                          { make: 'Honda', image: 'images/honda-accord-2005.jpg', model: 'Accord', year: 2005, price: 7000 },
+                          { make: 'Honda', image: 'images/honda-accord-2008.jpg', model: 'Accord', year: 2008, price: 11000 },
+                          { make: 'Toyota', image: 'images/toyota-camry-2009.jpg', model: 'Camry', year: 2009, price: 12500 },
+                          { make: 'Toyota', image: 'images/toyota-corrolla-2016.jpg', model: 'Corolla', year: 2016, price: 15000 },
+                          { make: 'Suzuki', image: 'images/suzuki-swift-2014.jpg', model: 'Swift', year: 2014, price: 9000 },
+                          { make: 'Audi', image: 'images/audi-a4-2013.jpg', model: 'A4', year: 2013, price: 25000 },
+                          { make: 'Audi', image: 'images/audi-a4-2013.jpg', model: 'A4', year: 2013, price: 26000 },
+                        ];
+            this.init();
+          }
+
+          init() {
+            this.initialRender();
+            this.addEventListeners();
+          }
+
+          render() {
+            let template = document.getElementById('template').innerHTML;
+            let partialTemplate = document.getElementById('car-partial-template').innerHTML;
+
+            Handlebars.registerPartial('carPartial', partialTemplate);
+            let script = Handlebars.compile(template);
+            return script;
+          }
+
+          initialRender() {
+            let main = document.querySelector('main');
+            let script = this.render();
+            main.innerHTML = script(this.cars);
+          }
+
+          filteredRender(matches) {
+            let main = document.querySelector('main');
+            let script = this.render();
+            main.innerHTML = script(matches);
+          }
+
+          addEventListeners() {
+            let filterBtn = document.getElementById('filter-button');
+            let makeSelection = document.getElementById('make');
+
+            filterBtn.addEventListener('click', event => {
+              let selections = this.selectedOptions();
+              let numberOfOptions = 0;
+              for (let category in selections) {
+                numberOfOptions += 1;
+              }
+
+              let matchingCars = [];
+
+              this.cars.forEach(car => {
+                let trackMatches = 0;
+
+                for (let category in selections) {
+                  if (car[category] === selections[category]) {
+                    trackMatches += 1;
+                  }
+                }
+
+                if (trackMatches === numberOfOptions) {
+                  matchingCars.push(car);
+                }
+              });
+
+              this.filteredRender(matchingCars);
+            });
+
+            makeSelection.addEventListener('change', event => {
+              const makeAndModels = {Honda: ['Accord'], Toyota: ['Camry', 'Corolla'], Suzuki: ['Swift'], Audi: ['A4']};
+              let selection = event.target.value;
+              let modelOptions = document.getElementById('model');
+              let matchingModels = makeAndModels[selection];
+
+              modelOptions.innerHTML = '';
+
+              matchingModels.forEach(model => {
+                modelOptions.insertAdjacentHTML('beforeend', "<option>" + model);
+              })
+            });
+          }
+
+          selectedOptions() {
+            let makeOption = document.getElementById('make').value;
+            let modelOption = document.getElementById('model').value;
+            let priceOption = Number(document.getElementById('price').value);
+            let yearOption = Number(document.getElementById('year').value);
+
+            let options = {make: makeOption, model: modelOption, price: priceOption, year: yearOption};
+            let selections = {};
+
+            for (let prop in options) {
+              if (options[prop]) {
+                selections[prop] = options[prop];
+              }
+            }
+
+            return selections;
+          }
+        }
+
+        new CarInventory();
+      });
+    </script>
+  </head>
+  <body>
+    <header>
+      <h1>Buy Used Cars</h1>
+
+      <section id="filter">
+        <label for="make">Make</label>
+        <select name="make" id="make">
+          <option value="">All</option>
+          <option value="Honda">Honda</option>
+          <option value="Toyota">Toyota</option>
+          <option value="Suzuki">Suzuki</option>
+          <option value="Audi">Audi</option>
+        </select>
+
+        <label for="model">Model</label>
+        <select name="model" id="model">
+          <option value="">Any</option>
+          <option value="Accord">Accord</option>
+          <option value="Camry">Camry</option>
+          <option value="Corolla">Corolla</option>
+          <option value="Swift">Swift</option>
+          <option value="A4">A4</option>
+        </select>
+
+        <label for="price">Price</label>
+        <select name="price" id="price">
+          <option value="">Any</option>
+          <option value="7000">7000</option>
+          <option value="11000">11000</option>
+          <option value="12500">12500</option>
+          <option value="15000">15000</option>
+          <option value="9000">9000</option>
+          <option value="25000">25000</option>
+          <option value="26000">26000</option>
+        </select>
+
+        <label for="year">Year</label>
+        <select name="year" id="year">
+          <option value="">Any</option>
+          <option value="2005">2005</option>
+          <option value="2008">2008</option>
+          <option value="2009">2009</option>
+          <option value="2016">2016</option>
+          <option value="2014">2014</option>
+          <option value="2013">2013</option>
+        </select>
+
+        <button type="button" name="button" id="filter-button">Filter</button>
+      </section>
+    </header>
+    <main>
+
+    </main>
+
+    <script id="template" type="text/x-handlebars">
+      {{#each this}}
+        <ul>
+          {{> carPartial}}
+        </ul>
+      {{/each}}
+    </script>
+
+    <script id="car-partial-template" type="text/x-handlebars">
+      <li class="image"><img src="{{image}}"></li>
+      <li class="make-and-model">{{make}} {{model}}</li>
+      <li class="year">Year: {{year}}</li>
+      <li class="price">Price: ${{price}}</li>
+      <li><button class="buy-button">Buy</button></li>
+    </script>
+  </body>
+</html>
