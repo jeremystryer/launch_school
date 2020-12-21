@@ -1,0 +1,59 @@
+html, body {
+  font: 16px black Arial, Helvetica, sans-serif;
+  margin: 0;
+}
+
+header {
+  background-color: #046BA3;
+  color: #FFFFFF;
+  padding: 20px;
+  text-align: center;
+}
+
+#add-contact-and-search {
+  text-align: center;
+  margin: 0 auto;
+  padding: 30px;
+  width: 75%;
+  border: 2px solid lightgray;
+}
+
+#add-contact-button {
+  margin-right: 120px;
+  padding: 15px;
+  font-size: 1.5em;
+}
+
+#search-field {
+  margin-left: 120px;
+  width: 225px;
+  padding: 10px;
+  font-size: 1.5em;
+}
+
+#contact-list {
+  width: 75%;
+  margin: 0 auto;
+  padding: 30px;
+}
+
+.contact {
+  display: inline-block;
+  margin-left: 0;
+  margin-right: 120px;
+  font-size: 1.15em;
+}
+
+dt {
+  font-weight: bold;
+}
+
+dd {
+  line-height: 2em;
+  margin: 0;
+}
+
+.edit-button, .delete-button {
+  margin: 5px;
+  font-size: 1.1em;
+}

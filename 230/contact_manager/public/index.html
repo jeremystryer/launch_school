@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Contact Manager</title>
+  <link rel="stylesheet" href="stylesheets/style.css">
+  <script src="javascripts/jquery.js"></script>
+  <script src="javascripts/handlebars.js"></script>
+  <script src="javascripts/script.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Contact Manager</h1>
+  </header>
+  <main>
+    <section id="add-contact-and-search">
+      <button id="add-contact-button">Add Contact</button>
+      <input type="search" id="search-field" placeholder="Search">
+    </section>
+    <section id="contact-list">
+    </section>
+  </main>
+
+  <script type="text/x-handlebars" id="contact-info-template">
+    {{#each this}}
+      <div class="contact">
+        <h2>{{full_name}}</h2>
+        <dl>
+          <dt>Phone Number:</dt>
+          <dd>{{phone_number}}</dd>
+          <dt>Email</dt>
+          <dd>{{email}}</dd>
+        </dl>
+        <button class="edit-button">Edit</button><button class="delete-button">Delete</button>
+      </div>
+      {{/each}}
+  </script>
+</body>
+</html>
