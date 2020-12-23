@@ -16,8 +16,9 @@
   </header>
   <main>
     <section id="add-contact-and-search">
-      <button id="add-contact-button">Add Contact</button>
-      <input type="search" id="search-field" placeholder="Search">
+      <button id="add-contact-button" class="button">Add Contact</button>
+      <input type="search" id="search-field" placeholder="Name">
+      <button id="search-button" class="button">Search</button>
     </section>
     <section id="contact-list"></section>
     <section class="modal">
@@ -25,6 +26,26 @@
     </section>
   </main>
   <footer><p id="byline">Developed by Jeremy Stryer</p></footer>
+
+  <section id="new-contact-form">
+    <form action="#" method="post">
+      <h2>New Contact</h2>
+      <div class="form-container">
+        <label for="full-name">Full Name</label>
+        <input type="text" name="full_name" id="full-name">
+
+        <label for="email">Email Address</label>
+        <input type="email" title="Enter a valid email address." name="email" id="email">
+
+        <label for="phone">Telephone Number</label>
+        <input type="tel" name="phone_number" id="phone">
+
+        <button class="submit button">Submit</button>
+        <button class="cancel button">Cancel</button>
+      </div>
+    </form>
+  </section>
+
   <script type="text/x-handlebars" id="contact-info-template">
     {{#each this}}
       <div class="contact" data-contact-id={{id}}>
