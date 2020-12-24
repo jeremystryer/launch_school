@@ -18,7 +18,6 @@
     <section id="add-contact-and-search">
       <button id="add-contact-button" class="button">Add Contact</button>
       <input type="search" id="search-field" placeholder="Name">
-      <button id="search-button" class="button">Search</button>
     </section>
     <section id="contact-list"></section>
     <section class="modal">
@@ -49,7 +48,7 @@
   <script type="text/x-handlebars" id="contact-info-template">
     {{#each this}}
       <div class="contact" data-contact-id={{id}}>
-        <h2>{{full_name}}</h2>
+        <h2 class="full-name">{{full_name}}</h2>
         <dl>
           <dt>Phone Number:</dt>
           <dd>{{phone_number}}</dd>

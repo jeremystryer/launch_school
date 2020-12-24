@@ -1,14 +1,11 @@
 class API {
-  constructor() {
-    // this.init();
-  }
-
   getAllContacts(callback) {
     $.ajax({
       url: "http://localhost:3000/api/contacts",
       method: "GET",
       dataType: "JSON",
     }).done(json => {
+      console.log(json);
       callback(json);
     });
   }
@@ -80,12 +77,24 @@ class App {
     let deleteBtns = document.querySelectorAll('.delete');
     let addContactBtn = document.getElementById('add-contact-button');
     let searchField = document.getElementById('search-field');
-    let searchBtn = document.getElementById('search-button');
+    let searchedName = '';
 
-    searchBtn.addEventListener('click', event => {
-      let searchValue = document.getElementById('search-field').value;
-      let contacts = document.querySelectorAll('.contact');
+    searchField.addEventListener('keyup', event => {
+      let searchedName = searchField.value;
+      let contactNames = document.getElementsByClassName('full-name');
 
+      let matches = ([...contactNames].filter(name => {
+        let regex = new RegExp('^' + searchedName, "i");
+        return name.innerText.match(regex);
+      }));
+
+      [...contactNames].forEach(name => {
+        if (!matches.includes(name)) {
+          name.parentElement.style.display = 'none';
+        } else {
+          name.parentElement.style.display = 'inline-block';
+        }
+      });
     });
 
     addContactBtn.addEventListener('click', event=> {
