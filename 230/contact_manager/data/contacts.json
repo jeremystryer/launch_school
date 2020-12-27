@@ -1,37 +1,30 @@
 [
   {
     "full_name": "Jeremy Stryer",
-    "phone_number": "8283838383",
+    "phone_number": "5085968209",
     "email": "jm.stryer@gmail.com",
-    "tags": null,
+    "tags": "engineer, spouse",
     "id": 1
   },
   {
-    "full_name": "Mike Wright",
-    "phone_number": "8383838383",
-    "email": "mjones@example.com",
-    "tags": null,
+    "full_name": "Alex Stryer",
+    "phone_number": "329498098",
+    "email": "astryer@gmail.com",
+    "tags": "engineer, son, child",
     "id": 3
   },
   {
-    "full_name": "Jon Richards",
-    "phone_number": "83838383222",
-    "email": "jrichards@example.com",
-    "tags": null,
-    "id": 5
+    "full_name": "Miriam Diaz",
+    "phone_number": "3439028409",
+    "email": "mdiazgro@gmail.com",
+    "tags": "spouse, mother, student",
+    "id": 4
   },
   {
-    "full_name": "Mike Lice",
-    "phone_number": "3434312431",
-    "email": "mlice@example.com",
-    "tags": null,
+    "full_name": "Sophia Stryer",
+    "phone_number": "3249083492",
+    "email": "sophia@gmail.com",
+    "tags": "daughter, child, kid",
     "id": 6
-  },
-  {
-    "full_name": "Jacob Wixen",
-    "phone_number": "92932030283028",
-    "email": "jwixen@example.com",
-    "tags": "Friend",
-    "id": 7
   }
 ]

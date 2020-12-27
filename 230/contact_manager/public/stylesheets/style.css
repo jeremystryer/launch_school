@@ -68,7 +68,6 @@ dd {
 }
 
 .modal {
-  display: none;
   background-color: rgba(0, 0, 0, 0.8);
   position: fixed;
   top: 0;
@@ -105,4 +104,8 @@ dd {
 
 #new-contact-form {
   display: none;
+}
+
+.tags {
+  font-weight: bold;
 }

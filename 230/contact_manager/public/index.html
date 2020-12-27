@@ -26,27 +26,8 @@
   </main>
   <footer><p id="byline">Developed by Jeremy Stryer</p></footer>
 
-  <section id="new-contact-form">
-    <form action="#" method="post">
-      <h2>New Contact</h2>
-      <div class="form-container">
-        <label for="full-name">Full Name</label>
-        <input type="text" name="full_name" id="full-name">
-
-        <label for="email">Email Address</label>
-        <input type="email" title="Enter a valid email address." name="email" id="email">
-
-        <label for="phone">Telephone Number</label>
-        <input type="tel" name="phone_number" id="phone">
-
-        <button class="submit button">Submit</button>
-        <button class="cancel button">Cancel</button>
-      </div>
-    </form>
-  </section>
-
-  <script type="text/x-handlebars" id="contact-info-template">
-    {{#each this}}
+  <script type="text/x-handlebars" id="contacts-template">
+    {{#each contacts}}
       <div class="contact" data-contact-id={{id}}>
         <h2 class="full-name">{{full_name}}</h2>
         <dl>
@@ -55,15 +36,42 @@
           <dt>Email</dt>
           <dd>{{email}}</dd>
         </dl>
+        <ul>
+          {{#each tags}}
+            <li><a class="tag" href="#">{{this}}</a></li>
+          {{/each}}
+        </ul>
         <button class="edit button">Edit</button>
         <button class="delete button">Delete</button>
       </div>
       {{/each}}
   </script>
 
+  <section id="new-contact-form">
+    <form action="#" method="post">
+      <h2>New Contact</h2>
+      <div class="form-container">
+        <label for="full-name">Full Name</label>
+        <input type="text" name="full_name" id="full-name" required>
+
+        <label for="email">Email Address</label>
+        <input type="email" title="Enter a valid email address." name="email" id="email" required>
+
+        <label for="phone">Telephone Number</label>
+        <input type="tel" name="phone_number" id="phone" required>
+
+        <label for="tags">Tags (separate each tag with a comma)</label>
+        <input type="text" name="tags" id="tags" required>
+
+        <button class="submit button">Submit</button>
+        <button class="cancel button">Cancel</button>
+      </div>
+    </form>
+  </section>
+
   <script type="text/x-handlebars" id="edit-contact-info-template">
     <form action="#" method="post">
-      <h2>Edit Contact</h2>
+      <h2>{{contact_form}}</h2>
       <div class="form-container">
         <label for="full-name">Full Name</label>
         <input type="text" name="full_name" id="full-name" placeholder="{{full_name}}">
@@ -73,6 +81,9 @@
 
         <label for="phone">Telephone Number</label>
         <input type="tel" name="phone_number" id="phone" placeholder={{phone_number}}>
+
+        <label for="tags">Tags (separate each tag with a comma)</label>
+        <input type="text" name="tags" id="tags" placeholder="{{tags}}">
 
         <button class="submit button">Submit</button>
         <button class="cancel button">Cancel</button>
