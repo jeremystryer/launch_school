@@ -48,12 +48,14 @@ h1 {
 }
 
 .form_container label {
-  display: block;
+  display: inline-block;
+  text-align: right;
   margin-bottom: 5px;
 }
 
 .form_container input {
   width: 100%;
+  display: inline-block;
   margin-bottom: 40px;
   padding: 10px;
 }
@@ -88,13 +90,20 @@ dl {
   padding: 0;
   margin: 0;
   border-bottom: 3px solid #E4E9EB;
+  display: inline-block;
 }
 
 dt {
   float: left;
   width: 40%;
-  padding: 0;
+  padding-left: 15px;
   margin: 0;
+
+}
+
+dl:hover {
+  cursor: pointer;
+  background-color: #B5E5F1;
 }
 
 dd {
@@ -105,13 +114,11 @@ dd {
 }
 
 .trash {
-  float: right;
-  cursor: pointer;
-  margin-top: 8px;
-  margin-right: 15px;
-  padding: 10px;
+  margin-top: 3px;
+  padding: 20px;
 }
 
 .trash:hover {
-  background-color: #83D0EF;
+  cursor: pointer;
+  background-color: #F1B088;
 }
