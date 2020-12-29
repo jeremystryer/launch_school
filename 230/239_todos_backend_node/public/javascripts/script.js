@@ -62,13 +62,19 @@ class Controller {
     event.preventDefault();
     let clicked = event.target;
     if (clicked.classList.contains('save')) {
-      this.saveNewTodo();
+      this.saveTodo();
     } else if (clicked.classList.contains('mark_complete')) {
-      console.log("mark complete");
+      this.markComplete();
     }
   }
 
-  saveNewTodo() {
+  markComplete() {
+    let json = JSON.stringify({completed: true});
+    this.api.updateSpecificTodo(this.currentTodoId, json, this.showAllTodos.bind(this));
+  }
+
+
+  saveTodo() {
     event.preventDefault();
     let form = document.querySelector('form');
     let formData = new FormData(form);
@@ -126,11 +132,16 @@ class Controller {
       let dataWithShortYears = getLastTwoDigits(data);
       let numberOfAllTodos = document.querySelectorAll(".number_of_all_todos");
       [...numberOfAllTodos].forEach(span => span.innerText = data.length);
-      // debugger;
-
       allTodosSection.innerHTML = this.templates['all_todos_template']({todos: dataWithShortYears});
+      dataWithShortYears.forEach(data => {
+        if (data.completed) {
+          let todo = document.querySelector("[data-id='" + data.id + "']");
+          todo.firstElementChild.classList.add('complete');
+        }
+      });
     }
 
+    this.currentTodoId = null;
     modal.style.display = 'none';
     this.api.retrieveAllTodos(populateTemplate);
   }
@@ -186,8 +197,8 @@ class Controller {
         modal.style.display = 'block';
       });
     } else if (clicked.classList.contains('todo_text')) {
-      let todoId = clicked.parentElement.parentElement.getAttribute("data-id");
-      this.api.retrieveSpecificTodo(todoId, populateFormWithTodoInfo);
+      this.currentTodoId = clicked.parentElement.parentElement.getAttribute("data-id");
+      this.api.retrieveSpecificTodo(this.currentTodoId, populateFormWithTodoInfo);
     }
   }
 }

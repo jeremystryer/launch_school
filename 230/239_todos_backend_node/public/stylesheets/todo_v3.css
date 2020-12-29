@@ -19,7 +19,18 @@ html, body {
   background-color: #2A90A9;
   flex: 1;
   font-size: .75em;
+  text-align: center;
+  padding-top: 10px;
 }
+
+#hamburger_icon,
+#all_todos_sidebar_title,
+#completed_icon,
+#completed_sidebar_title {
+  display: inline-block;
+  margin-right: 10px;
+}
+
 
 .button {
   font: bold 16px Arial;
@@ -88,49 +99,12 @@ h1 {
   text-align: center;
 }
 
-/* .checkbox {
-  float: left;
-  height: 40px;
-  display: inline-block;
-  padding: 10px;
-} */
-
-/* dl {
-  width: 70%;
-  overflow: hidden;
-  margin: 0 0 0 35px;
-  display: inline-block;
-}
-
-dl:hover {
-  background-color: #B5E5F1;
-}
-
-dt {
-  float: left;
-  width: 40%;
-  padding-right: 0;
-  margin: 0;
-}
-
-dt:hover {
-}
-
-dd {
-  float: left;
-  width: 25%;
-  padding: 0;
-  margin: 0;
-} */
-
 li {
   list-style-type: none;
-  /* width: 100%; */
 }
 
 .todo_info {
   display: inline-block;
-  /* padding-right: 50px; */
   width: 50%;
   padding-left: 15px;
 }
@@ -159,4 +133,8 @@ li {
 .todo_text:hover {
   cursor: pointer;
   color: #082D9C;
+}
+
+.complete {
+  text-decoration-line: line-through;
 }
