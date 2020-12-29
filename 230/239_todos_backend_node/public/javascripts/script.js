@@ -64,7 +64,11 @@ class Controller {
     if (clicked.classList.contains('save')) {
       this.saveTodo();
     } else if (clicked.classList.contains('mark_complete')) {
-      this.markComplete();
+      if (this.currentTodoId) {
+        this.markComplete();
+      } else {
+        alert("You cannot mark a new todo as complete.")
+      }
     }
   }
 
