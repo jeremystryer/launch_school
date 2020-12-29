@@ -1,12 +1,13 @@
 class Controller {
   constructor() {
     this.api = new API();
+    this.ui = new UI();
+    this.utilities = new UTILITIES();
     this.init();
   }
 
   init() {
     this.createTemplates();
-    // this.populateTemplates();
     this.showAllTodos();
     this.bindEventHandlers();
 
@@ -21,10 +22,6 @@ class Controller {
       this.templates[tmpl["id"]] = Handlebars.compile(tmpl["innerHTML"]);
     });
 
-    // document.querySelectorAll("[data-type=partial]").forEach(tmpl => {
-    //   Handlebars.registerPartial(tmpl["id"], tmpl["innerHTML"]);
-    // });
-
     Handlebars.registerHelper("monthAndYearExist", function(month, year) {
       if (month && year) {
         return month + '/' + year;
@@ -32,17 +29,20 @@ class Controller {
         return "No Due Date";
       }
     });
+
+    // document.querySelectorAll("[data-type=partial]").forEach(tmpl => {
+    //   Handlebars.registerPartial(tmpl["id"], tmpl["innerHTML"]);
+    // });
   }
 
   bindEventHandlers() {
-
     let modal = document.querySelector(".modal");
-    let form = document.querySelector('form');
 
     document.addEventListener('click', this.displayForm.bind(this));
     modal.addEventListener('click', this.closeForm);
     document.addEventListener('click', this.evaluateForm.bind(this));
     document.addEventListener('click', this.deleteTodo.bind(this));
+    document.addEventListener('click', this.toggleComplete.bind(this));
   }
 
   deleteTodo() {
@@ -56,6 +56,40 @@ class Controller {
       let todoId = getTodoId(clicked.parentElement);
       this.api.removeTodo(todoId, this.showAllTodos.bind(this));
     }
+  }
+
+  showAllTodos() {
+    let allTodosSection = document.getElementById("all_todos_section");
+    let modal = document.querySelector(".modal");
+
+    const populateTemplate = (data) => {
+      let completedTodos;
+      let incompleteTodos;
+
+      let dataWithShortYears = this.utilities.getLastTwoDigits(data);
+      let numberOfAllTodos = document.querySelectorAll(".number_of_all_todos");
+      [...numberOfAllTodos].forEach(span => span.innerText = data.length);
+
+      let todos = this.utilities.separateIncompleteAndCompleteTodos(dataWithShortYears);
+      incompleteTodos = todos[0];
+      completedTodos = todos[1];
+      completedTodos = this.utilities.sortTodos(completedTodos);
+
+      dataWithShortYears = incompleteTodos.concat(completedTodos);
+      allTodosSection.innerHTML = this.templates['all_todos_template']({todos: dataWithShortYears});
+
+      dataWithShortYears.forEach(data => {
+        if (data.completed) {
+          let todo = document.querySelector("[data-id='" + data.id + "']");
+          todo.firstElementChild.classList.add('complete');
+          todo.firstElementChild.firstElementChild.checked = true;
+        }
+      });
+    }
+
+    this.currentTodoId = null;
+    modal.style.display = 'none';
+    this.api.retrieveAllTodos(populateTemplate);
   }
 
   evaluateForm() {
@@ -72,37 +106,37 @@ class Controller {
     }
   }
 
+  toggleComplete() {
+    let clicked = event.target;
+    let complete;
+    let json;
+
+    if (clicked.classList.contains('checkbox') || clicked.classList.contains('todo_info')) {
+      complete = !clicked.closest('div.todo_info').classList.contains('complete');
+      this.currentTodoId = clicked.closest('li').getAttribute('data-id');
+      // json = JSON.stringify({completed: complete});
+      json = this.utilities.convertToJson({completed: complete});
+      this.api.updateSpecificTodo(this.currentTodoId, json, this.showAllTodos.bind(this));
+    }
+  }
+
   markComplete() {
     let json = JSON.stringify({completed: true});
     this.api.updateSpecificTodo(this.currentTodoId, json, this.showAllTodos.bind(this));
   }
 
-
   saveTodo() {
     event.preventDefault();
     let form = document.querySelector('form');
-    let formData = new FormData(form);
+    let data = new FormData(form);
     let todoId = document.querySelector('.form_container').getAttribute('data-id');
     let titleValue = document.getElementById('title').value
 
-    let todoInfo = {};
-
-    const validateTitleInput = (value) => {
-      if (!value || value.length < 3) {
-        alert("You must enter an item name of at least 3 characters");
-        return false;
-      } else {
-        return true;
-      }
+    if (this.utilities.validateInput(titleValue) === false) {
+      return;
     }
 
-    formData.forEach(function(value, key) {
-      if (value) {
-        todoInfo[key] = value;
-      }
-    });
-
-    let json = JSON.stringify(todoInfo);
+    let json = this.utilities.processForm(data);
 
     if (todoId) {
       this.api.updateSpecificTodo(todoId, json, this.showAllTodos.bind(this));
@@ -119,37 +153,6 @@ class Controller {
     });
   }
 
-  showAllTodos() {
-    let allTodosSection = document.getElementById("all_todos_section");
-    let modal = document.querySelector(".modal");
-
-    const getLastTwoDigits = (todos) => {
-      todos.forEach(todo => {
-        if (todo.year) {
-          todo.year = todo.year.slice(2, 4);
-        }
-      });
-      return todos;
-    }
-
-    const populateTemplate = (data) => {
-      let dataWithShortYears = getLastTwoDigits(data);
-      let numberOfAllTodos = document.querySelectorAll(".number_of_all_todos");
-      [...numberOfAllTodos].forEach(span => span.innerText = data.length);
-      allTodosSection.innerHTML = this.templates['all_todos_template']({todos: dataWithShortYears});
-      dataWithShortYears.forEach(data => {
-        if (data.completed) {
-          let todo = document.querySelector("[data-id='" + data.id + "']");
-          todo.firstElementChild.classList.add('complete');
-        }
-      });
-    }
-
-    this.currentTodoId = null;
-    modal.style.display = 'none';
-    this.api.retrieveAllTodos(populateTemplate);
-  }
-
   displayForm() {
     let clicked = event.target;
     let addTodoBtn = document.querySelector('.add_todo');
@@ -164,19 +167,7 @@ class Controller {
 
       let dayOptionIndex = parseInt(data.day, 10) || '';
       let monthOptionIndex = parseInt(data.month, 10) || '';
-
-      let yearOptionIndex;
-
-      function findIndexForYearValue() {
-        let yearValue = data.year;
-        [...year.options].forEach((option, index) => {
-          if (option.innerText === yearValue) {
-            yearOptionIndex = index;
-          }
-        });
-      }
-
-      findIndexForYearValue();
+      let yearOptionIndex = this.utilities.findIndex(data);
 
       if (dayOptionIndex) {
         day.options[dayOptionIndex].selected = true;
@@ -260,22 +251,78 @@ class API {
   }
 }
 
-// class CRUD {
-//   constructor() {
-//     this.api = new API();
-//   }
-//
-//   showAllTodos() {
-//     this.api.retrieveAllTodos();
-//   }
-// }
-
 class UTILITIES {
+  getLastTwoDigits(todos) {
+    todos.forEach(todo => {
+      if (todo.year) {
+        todo.year = todo.year.slice(2, 4);
+      }
+    });
+    return todos;
+  }
 
-}
+  sortTodos(todos) {
+    todos.sort((todo1, todo2) => {
+      if (todo1.title < todo2.title) {
+        return -1;
+      } else if (todo1.title > todo2.title) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
+    return todos;
+  }
 
-class UI {
+  separateIncompleteAndCompleteTodos(todos) {
+    let completedTodos = [];
+    let incompleteTodos = [];
 
+    todos.forEach(todo => {
+      if (todo.completed) {
+        completedTodos.push(todo);
+      } else {
+        incompleteTodos.push(todo);
+      }
+    });
+
+    return [incompleteTodos, completedTodos];
+  }
+
+  validateInput(value) {
+    if (!value || value.length < 3) {
+      alert("You must enter an item name of at least 3 characters");
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  processForm(data) {
+    let todoInfo = {};
+    data.forEach((value, key) => {
+      if (value) {
+        todoInfo[key] = value;
+      }
+    });
+    return this.convertToJson(todoInfo);
+  }
+
+  findIndex(data) {
+    let yearValue = data.year;
+    let yearIndex;
+
+    [...year.options].forEach((option, index) => {
+      if (option.innerText === yearValue) {
+        yearIndex = index;
+      }
+    });
+    return yearIndex;
+  }
+
+  convertToJson(status) {
+    return JSON.stringify(status);
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
