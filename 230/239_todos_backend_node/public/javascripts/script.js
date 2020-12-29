@@ -21,18 +21,25 @@ class Controller {
       this.templates[tmpl["id"]] = Handlebars.compile(tmpl["innerHTML"]);
     });
 
-    document.querySelectorAll("[data-type=partial]").forEach(tmpl => {
-      Handlebars.registerPartial(tmpl["id"], tmpl["innerHTML"]);
-    });
+    // document.querySelectorAll("[data-type=partial]").forEach(tmpl => {
+    //   Handlebars.registerPartial(tmpl["id"], tmpl["innerHTML"]);
+    // });
 
+    Handlebars.registerHelper("monthAndYearExist", function(month, year) {
+      if (month && year) {
+        return month + '/' + year;
+      } else {
+        return "No Due Date";
+      }
+    });
   }
 
   bindEventHandlers() {
-    let addTodoBtn = document.querySelector('.add_todo');
+
     let modal = document.querySelector(".modal");
     let form = document.querySelector('form');
 
-    addTodoBtn.addEventListener('click', this.displayNewTodoForm);
+    document.addEventListener('click', this.displayForm.bind(this));
     modal.addEventListener('click', this.closeForm);
     document.addEventListener('click', this.evaluateForm.bind(this));
     document.addEventListener('click', this.deleteTodo.bind(this));
@@ -65,10 +72,12 @@ class Controller {
     event.preventDefault();
     let form = document.querySelector('form');
     let formData = new FormData(form);
+    let todoId = document.querySelector('.form_container').getAttribute('data-id');
     let titleValue = document.getElementById('title').value
-    let object = {};
 
-    const validateInput = (value) => {
+    let todoInfo = {};
+
+    const validateTitleInput = (value) => {
       if (!value || value.length < 3) {
         alert("You must enter an item name of at least 3 characters");
         return false;
@@ -77,27 +86,19 @@ class Controller {
       }
     }
 
-    if (!validateInput(titleValue)) return;
-
     formData.forEach(function(value, key) {
       if (value) {
-        object[key] = value;
+        todoInfo[key] = value;
       }
     });
 
-    let json = JSON.stringify(object);
-    this.api.createNewTodo(json, this.showAllTodos.bind(this));
-  }
+    let json = JSON.stringify(todoInfo);
 
-  displayNewTodoForm() {
-    let newTodoForm = document.getElementById('new_todo_form_section').innerHTML;
-    let modal = document.querySelector(".modal");
-    let modalContent = document.querySelector(".modal_content");
-    modalContent.innerHTML = newTodoForm;
-
-    $(".modal").fadeIn('7000', function() {
-      modal.style.display = 'block';
-    });
+    if (todoId) {
+      this.api.updateSpecificTodo(todoId, json, this.showAllTodos.bind(this));
+    } else {
+      this.api.createNewTodo(json, this.showAllTodos.bind(this));
+    }
   }
 
   closeForm() {
@@ -112,12 +113,82 @@ class Controller {
     let allTodosSection = document.getElementById("all_todos_section");
     let modal = document.querySelector(".modal");
 
-    let populateTemplate = (data) => {
-      allTodosSection.innerHTML = this.templates['all_todos_template']({todos: data});
+    const getLastTwoDigits = (todos) => {
+      todos.forEach(todo => {
+        if (todo.year) {
+          todo.year = todo.year.slice(2, 4);
+        }
+      });
+      return todos;
+    }
+
+    const populateTemplate = (data) => {
+      let dataWithShortYears = getLastTwoDigits(data);
+      let numberOfAllTodos = document.querySelectorAll(".number_of_all_todos");
+      [...numberOfAllTodos].forEach(span => span.innerText = data.length);
+      // debugger;
+
+      allTodosSection.innerHTML = this.templates['all_todos_template']({todos: dataWithShortYears});
     }
 
     modal.style.display = 'none';
     this.api.retrieveAllTodos(populateTemplate);
+  }
+
+  displayForm() {
+    let clicked = event.target;
+    let addTodoBtn = document.querySelector('.add_todo');
+    let modal = document.querySelector(".modal");
+    let modalContent = document.querySelector(".modal_content");
+
+    const populateFormWithTodoInfo = (data) => {
+      modalContent.innerHTML = this.templates['form_template'](data);
+      let day = document.getElementById('day');
+      let month = document.getElementById('month');
+      let year = document.getElementById('year');
+
+      let dayOptionIndex = parseInt(data.day, 10) || '';
+      let monthOptionIndex = parseInt(data.month, 10) || '';
+
+      let yearOptionIndex;
+
+      function findIndexForYearValue() {
+        let yearValue = data.year;
+        [...year.options].forEach((option, index) => {
+          if (option.innerText === yearValue) {
+            yearOptionIndex = index;
+          }
+        });
+      }
+
+      findIndexForYearValue();
+
+      if (dayOptionIndex) {
+        day.options[dayOptionIndex].selected = true;
+      }
+
+      if (monthOptionIndex) {
+        month.options[monthOptionIndex].selected = true;
+      }
+
+      if (yearOptionIndex) {
+        year.options[yearOptionIndex].selected = true;
+      }
+
+      $(".modal").fadeIn('7000', function() {
+        modal.style.display = 'block';
+      });
+    }
+
+    if (clicked === addTodoBtn) {
+      modalContent.innerHTML = this.templates['form_template']({});
+      $(".modal").fadeIn('7000', function() {
+        modal.style.display = 'block';
+      });
+    } else if (clicked.classList.contains('todo_text')) {
+      let todoId = clicked.parentElement.parentElement.getAttribute("data-id");
+      this.api.retrieveSpecificTodo(todoId, populateFormWithTodoInfo);
+    }
   }
 }
 
@@ -137,15 +208,20 @@ class API {
 
   retrieveAllTodos(callback) {
     $.ajax({
-      url: 'http://localhost:3000/api/todos',
-      method: 'GET',
+      url: "http://localhost:3000/api/todos",
+      method: "GET",
     }).done((jsonTodos) => {
       callback(jsonTodos);
     });
   }
 
-  retrieveSpecificTodo() {
-
+  retrieveSpecificTodo(id, callback) {
+    $.ajax({
+      url: "http://localhost:3000/api/todos/" + id,
+      method: "GET"
+    }).done(jsonTodo => {
+      callback(jsonTodo);
+    });
   }
 
   createNewTodo(data, callback) {
@@ -159,8 +235,13 @@ class API {
     });
   }
 
-  updateSpecificTodo() {
-
+  updateSpecificTodo(id, data, callback) {
+    $.ajax({
+      url: "http://localhost:3000/api/todos/" + id,
+      method: "PUT",
+      data: data,
+      contentType: "application/json",
+    }).done(callback);
   }
 }
 

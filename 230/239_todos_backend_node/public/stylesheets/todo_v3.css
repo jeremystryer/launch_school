@@ -1,6 +1,6 @@
 html, body {
   height: 100%;
-  font: 24px black Arial, Helvetica, sans-serif;
+  font: 24px black normal Arial, Helvetica, sans-serif;
   margin: 0 auto;
   line-height: 2em;
 }
@@ -16,8 +16,9 @@ html, body {
 
 #sidebar {
   height: 100%;
-  background-color: #046BA3;
+  background-color: #2A90A9;
   flex: 1;
+  font-size: .75em;
 }
 
 .button {
@@ -27,12 +28,15 @@ html, body {
 }
 
 h1 {
+  display: inline-block;
   margin-left: 35px;
+  padding-right: 20px;
 }
 
 
 #plus_icon_and_add_new_todo_button {
   margin-left: 35px;
+  margin-bottom: 30px;
 }
 
 .add_todo {
@@ -84,26 +88,32 @@ h1 {
   text-align: center;
 }
 
-dl {
+/* .checkbox {
+  float: left;
+  height: 40px;
+  display: inline-block;
+  padding: 10px;
+} */
+
+/* dl {
   width: 70%;
   overflow: hidden;
-  padding: 0;
-  margin: 0;
-  border-bottom: 3px solid #E4E9EB;
+  margin: 0 0 0 35px;
   display: inline-block;
+}
+
+dl:hover {
+  background-color: #B5E5F1;
 }
 
 dt {
   float: left;
   width: 40%;
-  padding-left: 15px;
+  padding-right: 0;
   margin: 0;
-
 }
 
-dl:hover {
-  cursor: pointer;
-  background-color: #B5E5F1;
+dt:hover {
 }
 
 dd {
@@ -111,14 +121,42 @@ dd {
   width: 25%;
   padding: 0;
   margin: 0;
+} */
+
+li {
+  list-style-type: none;
+  /* width: 100%; */
+}
+
+.todo_info {
+  display: inline-block;
+  /* padding-right: 50px; */
+  width: 50%;
+  padding-left: 15px;
+}
+
+.todo_info:hover {
+  background-color: #B5E5F1;
 }
 
 .trash {
-  margin-top: 3px;
-  padding: 20px;
+  vertical-align: middle;
+  padding: 14px;
 }
 
 .trash:hover {
   cursor: pointer;
   background-color: #F1B088;
+}
+
+.number_of_all_todos {
+  background-color: #253568;
+  color: #F3F4F7;
+  padding: 10px;
+  border-radius: 100%;
+}
+
+.todo_text:hover {
+  cursor: pointer;
+  color: #082D9C;
 }
