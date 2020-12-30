@@ -145,7 +145,7 @@ li {
   padding: 0;
 }
 
-#all_todos_sidebar_title, .sidebar_completed_date {
+#all_todos_sidebar_title, .sidebar_completed_date, #completed_sidebar_title {
   cursor: pointer;
 }
 
@@ -171,6 +171,6 @@ h1#category {
   padding: 10px;
 }
 
-#all_todos_sidebar_count {
+#all_todos_sidebar_count, #completed_todos_sidebar_count {
   display: inline-block;
 }
