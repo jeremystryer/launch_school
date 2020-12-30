@@ -38,13 +38,6 @@ html, body {
   padding: 6px 12px;
 }
 
-/* h1 {
-  display: inline-block;
-  margin-left: 35px;
-  padding-right: 20px;
-} */
-
-
 #plus_icon_and_add_new_todo_button {
   margin-left: 35px;
   margin-bottom: 30px;
@@ -123,14 +116,6 @@ li {
   background-color: #F1B088;
 }
 
-/* .number_of_all_todos {
-  display: inline-block;
-  background-color: #253568;
-  color: #F3F4F7;
-  padding: 10px;
-  border-radius: 100%;
-} */
-
 .todo_text:hover {
   cursor: pointer;
   color: #082D9C;
@@ -157,11 +142,6 @@ li {
 h1#category {
   display: inline-block;
   margin-left: 45px;
-}
-
-#reset {
-  margin-left: 60px;
-  cursor: pointer;
 }
 
 #count {

@@ -6,7 +6,6 @@ class Controller {
   }
 
   init() {
-    this.currentTodos = [];
     this.createTemplates();
     this.showTodos();
     this.bindEventHandlers();
@@ -36,7 +35,6 @@ class Controller {
     let modal = document.querySelector(".modal");
     let allTodosSidebarTitle = document.getElementById("all_todos_sidebar_title");
     let completedTodosSidebarTitle = document.getElementById("completed_sidebar_title");
-    let resetBtn = document.getElementById("reset");
 
     document.addEventListener('click', this.displayForm.bind(this));
     modal.addEventListener('click', this.closeFormWhenClickingOut);
@@ -44,10 +42,8 @@ class Controller {
     document.addEventListener('click', this.deleteTodo.bind(this));
     document.addEventListener('click', this.toggleComplete.bind(this));
     document.addEventListener('click', this.showSelectedTodos.bind(this));
-    // allTodosSidebarTitle.addEventListener('click', this.displayAllTodos);
     allTodosSidebarTitle.addEventListener('click', this.showTodos.bind(this));
     completedTodosSidebarTitle.addEventListener('click', this.showAllDeletedTodos.bind(this));
-    resetBtn.addEventListener('click', this.reset.bind(this));
     document.addEventListener('click', this.showSelectedDeletedTodos.bind(this));
   }
 
@@ -69,24 +65,6 @@ class Controller {
     categoryTitle.innerText = "Completed";
     countTitle.innerText = count;
   }
-
-  reset() {
-    let confirm = window.confirm("Are you sure that you want to delete all todos? This cannot be undone.")
-
-    if (confirm) {
-      this.api.resetDatabase(this.showTodos.bind(this));
-    }
-  }
-
-  // displayAllTodos() {
-  //   let allTodos = document.querySelectorAll(".todo_info");
-  //   let category = document.getElementById("category");
-  //   category.innerText = "All Todos";
-  //
-  //   [...allTodos].forEach(todo => {
-  //     todo.parentElement.style.display = 'block';
-  //   });
-  // }
 
   showSelectedDeletedTodos() {
     let clicked = event.target;
@@ -149,7 +127,7 @@ class Controller {
           todo.parentElement.style.display = 'none';
         } else {
           todo.parentElement.style.display = 'block';
-          this.currentTodos.push(todo.parentElement);
+          this.currentCategory = clickedDate;
         }
       });
       category.innerText = clicked.children[0].innerText;;
@@ -165,7 +143,7 @@ class Controller {
           todo.parentElement.style.display = 'none';
         } else {
           todo.parentElement.style.display = 'block';
-          this.currentTodos.push(todo.parentElement);
+          this.currentCategory = clickedDate;
         }
       });
 
@@ -187,43 +165,11 @@ class Controller {
       return element.getAttribute('data-id');
     }
 
-    // if (clicked.classList.contains('trash')) {
-    //   let todoId = getTodoId(clicked.parentElement);
-    //
-    //   const removeTodoFromPage = (id) => {
-    //     let todo = document.querySelector("[data-id='" + id + "']");
-    //     todo.remove();
-    //   }
-
-
     if (clicked.classList.contains('trash')) {
-      // this.api.destroyTodo(todoId, removeTodoFromPage);
       let todoId = getTodoId(clicked.parentElement);
       this.api.destroyTodo(todoId, this.showTodos.bind(this));
     }
   }
-
-  // organizeTodos() {
-  //   let completedTodos;
-  //   let incompleteTodos;
-  //   let todosSection = document.getElementById("todos_section");
-  //   let allTodos;
-  //
-  //   let todos = document.querySelectorAll(".todo_info");
-  //
-  //   todos =  this.utilities.separateIncompleteAndCompleteTodos(todos);
-  //   incompleteTodos = todos[0];
-  //   completedTodos = todos[1];
-  //
-  //   completedTodos = this.utilities.sortTodos(completedTodos);
-  //   allTodos = completedTodos.concat(incompleteTodos);
-  //
-  //   // todosSection.innerHTML = '';
-  //   [...allTodos].forEach(todo => {
-  //     // todosSection.append(todo);
-  //     // todosSection.insertAdjacentElement('afterbegin', todo);
-  //   });
-  // }
 
   showTodos() {
     let category = document.getElementById("category");
@@ -259,6 +205,9 @@ class Controller {
       let count = document.getElementById('count');
       count.innerText = data.length;
       this.showSidebarContent(data);
+      if (this.currentCategory) {
+        this.hideTodos();
+      }
     }
 
     this.currentTodoId = null;
@@ -266,9 +215,25 @@ class Controller {
     this.api.retrieveAllTodos(populateTemplate);
   }
 
-  // showMainPageContent() {
-  //   console.log('showing main page');
-  // }
+  hideTodos() {
+    let current = this.currentCategory;
+    let todos = document.querySelectorAll('.todo_info');
+    let categoryTitle = document.getElementById("category");
+    let countTitle = document.getElementById('count');
+    let count = 0;
+
+    [...todos].forEach(todo => {
+      if (todo.innerText.trim().split('-')[1].trim() === this.currentCategory) {
+        todo.parentElement.style.display = 'block'
+        count += 1;
+      } else {
+        todo.parentElement.style.display = 'none';
+      }
+    });
+
+    categoryTitle.innerText = this.currentCategory;
+    countTitle.innerText = count;
+  }
 
   showSidebarContent(data) {
     let todosByDates = [];
@@ -362,7 +327,6 @@ class Controller {
         todosByCompletion.insertAdjacentElement("beforeend", li);
       }
     }
-
   }
 
   evaluateForm() {
@@ -423,15 +387,10 @@ class Controller {
     let json = this.utilities.processForm(data);
 
     if (todoId) {
-      this.api.updateSpecificTodo(todoId, json, this.closeFormAfterSaving.bind(this));
+      this.api.updateSpecificTodo(todoId, json, this.showTodos.bind(this));
     } else {
       this.api.createNewTodo(json, this.showTodos.bind(this));
     }
-  }
-
-  closeFormAfterSaving() {
-    let modal = document.querySelector('.modal');
-    modal.style.display = "none";
   }
 
   closeFormWhenClickingOut() {
@@ -473,6 +432,11 @@ class Controller {
       $(".modal").fadeIn('7000', function() {
         modal.style.display = 'block';
       });
+
+      if (event.target !== modal ) return;
+      $(".modal").fadeOut('7000', function() {
+        $(".modal")[0].style.display = 'none';
+      });
     }
 
     if (clicked === addTodoBtn) {
@@ -494,15 +458,6 @@ class API {
       method: "DELETE",
     }).done(() => {
       callback(id);
-    });
-  }
-
-  resetDatabase(callback) {
-    $.ajax({
-      url: "http://localhost:3000/api/reset",
-      method: "GET",
-    }).done(() => {
-      callback();
     });
   }
 
@@ -573,8 +528,6 @@ class UTILITIES {
     let incompleteTodos = [];
 
     [...todos].forEach(todo => {
-
-      // if (todo.classList.contains('complete')) {
       if (todo.completed) {
         completedTodos.push(todo);
       } else {
