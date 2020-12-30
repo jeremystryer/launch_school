@@ -11,7 +11,6 @@
 </head>
 <body>
 
-  <!-- START OF HANDLEBARS TEMPLATE (ID = main_template) -->
   <script type="text/x-handlebars" id="main_template">
   <input type="checkbox" id="sidebar_toggle"/>
   <div id="sidebar" >
@@ -37,7 +36,6 @@
       {{> title_template}}
     </header>
 
-    <!-- FIRST MILESTONE -->
     <main>
       <label for="new_item">
         <img src="images/plus.png" alt="Add Todo Item" />
@@ -142,9 +140,6 @@
   </div>
   </script>
 
-  <!-- END OF HANDLEBARS TEMPLATE -->
-
-  <!-- PARTIALS -->
   <script type="text/x-handlebars" id="item_partial" data-type="partial">
     <tr  data-id="{{id}}" >
       <td class="list_item">

@@ -11,28 +11,31 @@
   </head>
   <body id="flex_container">
     <section id="sidebar">
-      <div id="hamburger_icon_and_all_todos_sidebar">
+      <div id="todos_by_date_section">
         <img src="images/hamburger.png" alt="Toggle Sidebar" id="hamburger_icon"/>
-        <h2 id="all_todos_sidebar_title">All Todos</h2><span class="number_of_all_todos"></span>
+        <h2 id="all_todos_sidebar_title">All Todos</h2>
+        <p id="all_todos_sidebar_count"></p>
+        <ul id="todos_by_date"></ul>
       </div>
-      <div id="hamburger_icon_and_completed_todos_sidebar">
+
+      <div id="completed_todos_section">
         <img src="images/completed.png" alt="Completed" id="completed_icon"/>
-        <h2 id="completed_sidebar_title">Completed</h2><span class="number_of__completed_todos"></span>
+        <h2 id="completed_sidebar_title">Completed</h2>
+        <p class="completed_todo_number"></p>
+        <ul id="todos_by_completion"></ul>
       </div>
     </section>
 
     <main id="main">
-        <h1>All Todos</h1>
-        <span class="number_of_all_todos"></span>
-      <div id="plus_icon_and_add_new_todo_button">
-        <img src="images/plus.png" alt="Add Todo Item" class="plus_icon"/>
-        <button class='add_todo button'>Add new todo</button>
-      </div>
-      <section id="all_todos_section"></section>
+      <h1 id="category"></h1>
+      <p id="count"></p>
+      <section id="todos_section"></section>
 
       <section class="modal">
         <section class="modal_content"></section>
       </section>
+
+      <button id="reset" class="button">Reset All Todos</button>
     </main>
 
     <script type="text/x-handlebars" id="form_template">
@@ -119,19 +122,29 @@
     </script>
 
     <script type="text/x-handlebars" id="all_todos_template">
-        {{#each todos}}
-        <ul>
-          <li data-id={{id}}>
-            <div class="todo_info">
-              <input type="checkbox" class="checkbox"></input>
-              <span class="todo_text">
-                {{title}} - {{monthAndYearExist month year}}
-              </span>
-            </div>
-            <img src="images/trash.png" alt="Delete" class="trash"/>
-          </li>
-        </ul>
-        {{/each}}
+      <div id="plus_icon_and_add_new_todo_button">
+        <img src="images/plus.png" alt="Add Todo Item" class="plus_icon"/>
+        <button class='add_todo button'>Add new todo</button>
+      </div>
+      {{#each todos}}
+      <ul>
+        <li data-id={{id}}>
+          <div class="todo_info">
+            <input type="checkbox" class="checkbox"></input>
+            <span class="todo_text">
+              {{title}} - {{monthAndYearExist month year}}
+            </span>
+          </div>
+          <img src="images/trash.png" alt="Delete" class="trash"/>
+        </li>
+      </ul>
+      {{/each}}
     </script>
+
+    <!-- <script type="text/x-handlebars" id="todos_by_date_template">
+      <ul>
+        <li>{{monthAndYearExist month year}}</li>
+      </ul>
+    </script> -->
   </body>
 </html>

@@ -17,7 +17,7 @@ html, body {
 #sidebar {
   height: 100%;
   background-color: #2A90A9;
-  flex: 1;
+  flex: 1.5;
   font-size: .75em;
   text-align: center;
   padding-top: 10px;
@@ -38,11 +38,11 @@ html, body {
   padding: 6px 12px;
 }
 
-h1 {
+/* h1 {
   display: inline-block;
   margin-left: 35px;
   padding-right: 20px;
-}
+} */
 
 
 #plus_icon_and_add_new_todo_button {
@@ -123,12 +123,13 @@ li {
   background-color: #F1B088;
 }
 
-.number_of_all_todos {
+/* .number_of_all_todos {
+  display: inline-block;
   background-color: #253568;
   color: #F3F4F7;
   padding: 10px;
   border-radius: 100%;
-}
+} */
 
 .todo_text:hover {
   cursor: pointer;
@@ -137,4 +138,39 @@ li {
 
 .complete {
   text-decoration-line: line-through;
+}
+
+.sidebar_list_date, .todos_date, .todos_count_per_date {
+  cursor: pointer;
+  padding: 0;
+}
+
+#all_todos_sidebar_title, .sidebar_completed_date {
+  cursor: pointer;
+}
+
+.todos_date, .todos_count_per_date {
+  display: inline;
+  margin: 10px;
+}
+
+h1#category {
+  display: inline-block;
+  margin-left: 45px;
+}
+
+#reset {
+  margin-left: 60px;
+  cursor: pointer;
+}
+
+#count {
+  display: inline-block;
+  color: #FFFFFF;
+  background-color: #2A90A9;
+  padding: 10px;
+}
+
+#all_todos_sidebar_count {
+  display: inline-block;
 }

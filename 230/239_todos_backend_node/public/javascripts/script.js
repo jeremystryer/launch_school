@@ -1,7 +1,6 @@
 class Controller {
   constructor() {
     this.api = new API();
-    this.ui = new UI();
     this.utilities = new UTILITIES();
     this.init();
   }
@@ -10,9 +9,6 @@ class Controller {
     this.createTemplates();
     this.showAllTodos();
     this.bindEventHandlers();
-
-    // this.crud.showAllTodos();
-
   }
 
   createTemplates() {
@@ -30,39 +26,188 @@ class Controller {
       }
     });
 
-    // document.querySelectorAll("[data-type=partial]").forEach(tmpl => {
-    //   Handlebars.registerPartial(tmpl["id"], tmpl["innerHTML"]);
-    // });
+    document.querySelectorAll("[data-type=partial]").forEach(tmpl => {
+      Handlebars.registerPartial(tmpl["id"], tmpl["innerHTML"]);
+    });
   }
 
   bindEventHandlers() {
     let modal = document.querySelector(".modal");
+    let allTodosSidebarTitle = document.getElementById("all_todos_sidebar_title");
+    let resetBtn = document.getElementById("reset");
 
     document.addEventListener('click', this.displayForm.bind(this));
-    modal.addEventListener('click', this.closeForm);
+    modal.addEventListener('click', this.closeFormWhenClickingOut);
     document.addEventListener('click', this.evaluateForm.bind(this));
     document.addEventListener('click', this.deleteTodo.bind(this));
     document.addEventListener('click', this.toggleComplete.bind(this));
+    document.addEventListener('click', this.showSelectedTodos.bind(this));
+    // allTodosSidebarTitle.addEventListener('click', this.displayAllTodos);
+    allTodosSidebarTitle.addEventListener('click', this.showAllTodos.bind(this));
+    resetBtn.addEventListener('click', this.reset.bind(this));
+    document.addEventListener('click', this.showSelectedDeletedTodos.bind(this));
+  }
+
+  reset() {
+    let confirm = window.confirm("Are you sure that you want to delete all todos? This cannot be undone.")
+
+    if (confirm) {
+      this.api.resetDatabase(this.showAllTodos.bind(this));
+    }
+  }
+
+  displayAllTodos() {
+    let allTodos = document.querySelectorAll(".todo_info");
+    let category = document.getElementById("category");
+    category.innerText = "All Todos";
+
+    [...allTodos].forEach(todo => {
+      todo.parentElement.style.display = 'block';
+    });
+  }
+
+  showSelectedDeletedTodos() {
+    let clicked = event.target;
+    let allTodos = document.querySelectorAll(".todo_info");
+    let category = document.getElementById("category");
+    let count = document.getElementById("count");
+
+    if (clicked.classList.contains("sidebar_completed_date")) {
+
+      [...allTodos].forEach(todo => {
+        let todoDate = todo.textContent.trim().split('-')[1].trim();
+        let clickedDate = clicked.firstElementChild.textContent;
+
+        if (todoDate !== clickedDate || !todo.classList.contains("complete")) {
+          todo.parentElement.style.display = 'none';
+        } else {
+          todo.parentElement.style.display = 'block';
+        }
+      });
+
+      category.innerText = clicked.children[0].innerText;;
+      count.innerText = clicked.children[1].innerText;
+    } else if (clicked.parentElement.classList.contains("sidebar_completed_date")) {
+      [...allTodos].forEach(todo => {
+
+        let todoDate = todo.textContent.trim().split('-')[1].trim();
+        let clickedDate = clicked.parentElement.firstElementChild.textContent;
+
+        if (todoDate !== clickedDate || !todo.classList.contains("complete")) {
+          todo.parentElement.style.display = 'none';
+        } else {
+          todo.parentElement.style.display = 'block';
+        }
+      });
+
+
+      if (clicked.classList.contains("todos_count_per_date")) {
+        category.innerText = clicked.previousElementSibling.innerText;
+        count.innerText = clicked.innerText;
+      } else {
+        category.innerText = clicked.innerText;
+        count.innerText = clicked.nextElementSibling.innerText;
+      }
+    }
+  }
+
+  showSelectedTodos() {
+    let clicked = event.target;
+    let allTodos = document.querySelectorAll(".todo_info");
+    let category = document.getElementById("category");
+    let count = document.getElementById("count");
+
+    if (clicked.classList.contains("sidebar_list_date")) {
+      [...allTodos].forEach(todo => {
+        let todoDate = todo.textContent.trim().split('-')[1].trim();
+        let clickedDate = clicked.firstElementChild.textContent;
+
+        if (todoDate !== clickedDate) {
+          todo.parentElement.style.display = 'none';
+        } else {
+          todo.parentElement.style.display = 'block';
+        }
+      });
+      category.innerText = clicked.children[0].innerText;;
+      count.innerText = clicked.children[1].innerText;
+
+    } else if (clicked.parentElement.classList.contains("sidebar_list_date")) {
+      [...allTodos].forEach(todo => {
+        let todoDate = todo.textContent.trim().split('-')[1].trim();
+        let clickedDate = clicked.parentElement.firstElementChild.textContent;
+
+        if (todoDate !== clickedDate) {
+          todo.parentElement.style.display = 'none';
+        } else {
+          todo.parentElement.style.display = 'block';
+        }
+      });
+
+      if (clicked.classList.contains("todos_count_per_date")) {
+        category.innerText = clicked.previousElementSibling.innerText;
+        count.innerText = clicked.innerText;
+      } else {
+        category.innerText = clicked.innerText;
+        count.innerText = clicked.nextElementSibling.innerText;
+      }
+    }
   }
 
   deleteTodo() {
     event.preventDefault();
     let clicked = event.target;
+
     const getTodoId = (element) => {
       return element.getAttribute('data-id');
     }
 
+    // if (clicked.classList.contains('trash')) {
+    //   let todoId = getTodoId(clicked.parentElement);
+    //
+    //   const removeTodoFromPage = (id) => {
+    //     let todo = document.querySelector("[data-id='" + id + "']");
+    //     todo.remove();
+    //   }
+
+
     if (clicked.classList.contains('trash')) {
+      // this.api.destroyTodo(todoId, removeTodoFromPage);
       let todoId = getTodoId(clicked.parentElement);
-      this.api.removeTodo(todoId, this.showAllTodos.bind(this));
+      this.api.destroyTodo(todoId, this.showAllTodos.bind(this));
     }
   }
 
+  // organizeTodos() {
+  //   let completedTodos;
+  //   let incompleteTodos;
+  //   let todosSection = document.getElementById("todos_section");
+  //   let allTodos;
+  //
+  //   let todos = document.querySelectorAll(".todo_info");
+  //
+  //   todos =  this.utilities.separateIncompleteAndCompleteTodos(todos);
+  //   incompleteTodos = todos[0];
+  //   completedTodos = todos[1];
+  //
+  //   completedTodos = this.utilities.sortTodos(completedTodos);
+  //   allTodos = completedTodos.concat(incompleteTodos);
+  //
+  //   // todosSection.innerHTML = '';
+  //   [...allTodos].forEach(todo => {
+  //     // todosSection.append(todo);
+  //     // todosSection.insertAdjacentElement('afterbegin', todo);
+  //   });
+  // }
+
   showAllTodos() {
-    let allTodosSection = document.getElementById("all_todos_section");
+    let category = document.getElementById("category");
+    let todosSection = document.getElementById("todos_section");
     let modal = document.querySelector(".modal");
 
-    const populateTemplate = (data) => {
+
+    category.innerText = "All Todos";
+
+    const populateTemplates = (data) => {
       let completedTodos;
       let incompleteTodos;
 
@@ -76,7 +221,7 @@ class Controller {
       completedTodos = this.utilities.sortTodos(completedTodos);
 
       dataWithShortYears = incompleteTodos.concat(completedTodos);
-      allTodosSection.innerHTML = this.templates['all_todos_template']({todos: dataWithShortYears});
+      todosSection.innerHTML = this.templates['all_todos_template']({todos: dataWithShortYears});
 
       dataWithShortYears.forEach(data => {
         if (data.completed) {
@@ -85,11 +230,110 @@ class Controller {
           todo.firstElementChild.firstElementChild.checked = true;
         }
       });
+
+      let count = document.getElementById('count');
+      count.innerText = data.length;
+      this.showSidebarContent(data);
     }
+
 
     this.currentTodoId = null;
     modal.style.display = 'none';
-    this.api.retrieveAllTodos(populateTemplate);
+    this.api.retrieveAllTodos(populateTemplates);
+  }
+
+  showSidebarContent(data) {
+    let todosByDates = [];
+
+    data.forEach(d => {
+      let month = d.month;
+      let year = d.year;
+      let date;
+
+      if (month === '' || year === '') {
+        date = "No Due Date";
+      } else {
+        date = month + "/" + year;
+      }
+
+      let obj = {};
+      obj[date] = d;
+      todosByDates.push(obj);
+    });
+
+    let todosCountByDate = {};
+    todosByDates.forEach(todo => {
+      let keys = Object.keys(todosCountByDate);
+      for (let prop in todo) {
+        if (keys.includes(prop)) {
+          todosCountByDate[prop] += 1;
+        } else {
+          todosCountByDate[prop] = 1;
+        }
+      }
+    });
+
+    let todosByDateSection = document.getElementById("todos_by_date");
+    let temp = document.getElementById("temp");
+    todosByDateSection.innerHTML = '';
+    let completedTodosSection = document.getElementById("completed_todos_section");
+    let todosByCompletion = document.getElementById("todos_by_completion");
+    let allTodosSideBarCount = document.getElementById("all_todos_sidebar_count");
+
+    allTodosSideBarCount.innerText = document.querySelectorAll(".todo_info").length;
+
+    for (let prop in todosCountByDate) {
+      let li = document.createElement("li");
+      let p1 = document.createElement("p");
+      let p2 = document.createElement("p");
+      li.classList.add("sidebar_list_date");
+
+      li.appendChild(p1);
+      p1.classList.add('todos_date')
+      li.appendChild(p2);
+      p2.classList.add('todos_count_per_date')
+      p1.appendChild(document.createTextNode(prop));
+      p2.appendChild(document.createTextNode(todosCountByDate[prop]));
+      todosByDateSection.insertAdjacentElement("beforeend", li);
+    }
+
+    let allTodos = document.querySelectorAll(".todo_info");
+    let completedTodosByDate = {};
+
+    for (let prop in todosCountByDate) {
+      let matchingTodos = ([...allTodos].filter(todo => {
+        let date = todo.textContent.trim().split('-')[1].trim();
+        if (date === prop) {
+          if (todo.classList.contains("complete")) {
+            if (completedTodosByDate[prop]) {
+              completedTodosByDate[prop] += 1
+            } else {
+              completedTodosByDate[prop] = 1
+            }
+          }
+        }
+      }));
+
+      todosByCompletion.innerHTML = '';
+
+      for (let prop in completedTodosByDate) {
+        let li = document.createElement("li");
+        let p1 = document.createElement("p");
+        let p2 = document.createElement("p");
+        li.classList.add("sidebar_completed_date");
+
+        li.appendChild(p1);
+        p1.classList.add('todos_date')
+        p1.classList.add('completed_todo');
+        li.appendChild(p2);
+        p2.classList.add('todos_count_per_date')
+        // p2.classList.add('completed_todo');
+        p1.appendChild(document.createTextNode(prop));
+        p2.appendChild(document.createTextNode(completedTodosByDate[prop]));
+        todosByCompletion.insertAdjacentElement("beforeend", li);
+      }
+    }
+
   }
 
   evaluateForm() {
@@ -114,15 +358,26 @@ class Controller {
     if (clicked.classList.contains('checkbox') || clicked.classList.contains('todo_info')) {
       complete = !clicked.closest('div.todo_info').classList.contains('complete');
       this.currentTodoId = clicked.closest('li').getAttribute('data-id');
-      // json = JSON.stringify({completed: complete});
       json = this.utilities.convertToJson({completed: complete});
+
+      function showUpdatedTodo() {
+        let todo = document.querySelector("[data-id='" + this.currentTodoId + "']");
+        let todoInfo = todo.firstElementChild;
+        todoInfo.classList.toggle('complete');
+        if (todoInfo.classList.contains('complete')) {
+          todoInfo.firstElementChild.checked = true;
+        } else {
+          todoInfo.firstElementChild.checked = false;
+        }
+      }
+
       this.api.updateSpecificTodo(this.currentTodoId, json, this.showAllTodos.bind(this));
     }
   }
 
   markComplete() {
     let json = JSON.stringify({completed: true});
-    this.api.updateSpecificTodo(this.currentTodoId, json, this.showAllTodos.bind(this));
+    this.api.updateSpecificTodo(this.currentTodoId, json, this.closeFormAfterSaving.bind(this));
   }
 
   saveTodo() {
@@ -139,13 +394,18 @@ class Controller {
     let json = this.utilities.processForm(data);
 
     if (todoId) {
-      this.api.updateSpecificTodo(todoId, json, this.showAllTodos.bind(this));
+      this.api.updateSpecificTodo(todoId, json, this.closeFormAfterSaving.bind(this));
     } else {
       this.api.createNewTodo(json, this.showAllTodos.bind(this));
     }
   }
 
-  closeForm() {
+  closeFormAfterSaving() {
+    let modal = document.querySelector('.modal');
+    modal.style.display = "none";
+  }
+
+  closeFormWhenClickingOut() {
     let modal = document.querySelector(".modal");
     if (event.target !== modal ) return;
     $(".modal").fadeOut('7000', function() {
@@ -199,17 +459,22 @@ class Controller {
 }
 
 class API {
-  removeTodo(id, callback) {
+  destroyTodo(id, callback) {
     $.ajax({
       url: "http://localhost:3000/api/todos/" + id,
       method: "DELETE",
     }).done(() => {
-      callback();
+      callback(id);
     });
   }
 
-  resetDatabase() {
-
+  resetDatabase(callback) {
+    $.ajax({
+      url: "http://localhost:3000/api/reset",
+      method: "GET",
+    }).done(() => {
+      callback();
+    });
   }
 
   retrieveAllTodos(callback) {
@@ -278,7 +543,9 @@ class UTILITIES {
     let completedTodos = [];
     let incompleteTodos = [];
 
-    todos.forEach(todo => {
+    [...todos].forEach(todo => {
+
+      // if (todo.classList.contains('complete')) {
       if (todo.completed) {
         completedTodos.push(todo);
       } else {
