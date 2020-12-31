@@ -33,8 +33,6 @@ class Controller {
 
   bindEventHandlers() {
     let modal = document.querySelector(".modal");
-    let allTodosSidebarTitle = document.getElementById("all_todos_sidebar_title");
-    let completedTodosSidebarTitle = document.getElementById("completed_sidebar_title");
 
     document.addEventListener('click', this.displayForm.bind(this));
     modal.addEventListener('click', this.closeFormWhenClickingOut);
@@ -42,72 +40,48 @@ class Controller {
     document.addEventListener('click', this.deleteTodo.bind(this));
     document.addEventListener('click', this.toggleComplete.bind(this));
     document.addEventListener('click', this.showSelectedTodos.bind(this));
-    allTodosSidebarTitle.addEventListener('click', this.showTodos.bind(this));
-    completedTodosSidebarTitle.addEventListener('click', this.showAllDeletedTodos.bind(this));
-    document.addEventListener('click', this.showSelectedDeletedTodos.bind(this));
+    document.addEventListener('click', this.showSelectedGroups.bind(this));
   }
 
-  showAllDeletedTodos() {
-    let allTodos = document.querySelectorAll(".todo_info");
-    let categoryTitle = document.getElementById("category");
-    let countTitle = document.getElementById('count');
-    let count = 0;
-
-    [...allTodos].forEach(todo => {
-      if (todo.classList.contains('complete')) {
-        todo.parentElement.style.display = 'block';
-        count += 1;
-      } else {
-        todo.parentElement.style.display = 'none';
-      }
-    });
-
-    categoryTitle.innerText = "Completed";
-    countTitle.innerText = count;
-  }
-
-  showSelectedDeletedTodos() {
+  showSelectedGroups() {
+    let allTodosSidebarTitle = document.getElementById("all_todos_sidebar_title");
+    let allTodosSidebarCount = document.getElementById("all_todos_sidebar_count");
+    let completedSidebarTitle = document.getElementById("completed_sidebar_title");
+    let completedTodosSideBarCount = document.getElementById("completed_todos_sidebar_count");
+    let todosByDateSection = document.getElementById("todos_by_date_section");
+    let completedTodosSection = document.getElementById("completed_todos_section");
+    let possibleClickOptions = [allTodosSidebarTitle, allTodosSidebarTitle, completedSidebarTitle, completedTodosSideBarCount, todosByDateSection, completedTodosSection];
+    let completedOptions = [completedTodosSection, completedSidebarTitle, completedTodosSideBarCount];
+    let allTodosOptions = [todosByDateSection, allTodosSidebarTitle, allTodosSidebarCount];
     let clicked = event.target;
-    let allTodos = document.querySelectorAll(".todo_info");
-    let category = document.getElementById("category");
-    let count = document.getElementById("count");
 
-    if (clicked.classList.contains("sidebar_completed_date")) {
+    if (possibleClickOptions.includes(clicked)) {
+      let todos = document.querySelectorAll(".todo_info");
+      let allTodos = document.querySelectorAll(".todo_info");
+      let count = 0;
 
-      [...allTodos].forEach(todo => {
-        let todoDate = todo.textContent.trim().split('-')[1].trim();
-        let clickedDate = clicked.firstElementChild.textContent;
-
-        if (todoDate !== clickedDate || !todo.classList.contains("complete")) {
-          todo.parentElement.style.display = 'none';
-        } else {
-          todo.parentElement.style.display = 'block';
-        }
-      });
-
-      category.innerText = clicked.children[0].innerText;;
-      count.innerText = clicked.children[1].innerText;
-    } else if (clicked.parentElement.classList.contains("sidebar_completed_date")) {
-      [...allTodos].forEach(todo => {
-
-        let todoDate = todo.textContent.trim().split('-')[1].trim();
-        let clickedDate = clicked.parentElement.firstElementChild.textContent;
-
-        if (todoDate !== clickedDate || !todo.classList.contains("complete")) {
-          todo.parentElement.style.display = 'none';
-        } else {
-          todo.parentElement.style.display = 'block';
-        }
-      });
-
-
-      if (clicked.classList.contains("todos_count_per_date")) {
-        category.innerText = clicked.previousElementSibling.innerText;
-        count.innerText = clicked.innerText;
+      if (allTodosOptions.includes(clicked)) {
+        this.currentCategory = null;
+        document.getElementById("category").innerText = "All Todos";
+        [...todos].forEach(todo => {
+          todo.parentElement.style.display = "block";
+          count += 1;
+        });
       } else {
-        category.innerText = clicked.innerText;
-        count.innerText = clicked.nextElementSibling.innerText;
+        this.currentCategory = "Completed";
+        document.getElementById("category").innerText = "Completed";
+        [...todos].forEach(todo => {
+          if (todo.classList.contains('complete')) {
+            todo.parentElement.style.display = "block";
+            count += 1;
+            this.current
+          } else {
+            todo.parentElement.style.display = "none";
+          }
+        });
       }
+
+      document.getElementById("count").innerText = count;;
     }
   }
 
@@ -128,9 +102,11 @@ class Controller {
         } else {
           todo.parentElement.style.display = 'block';
           this.currentCategory = clickedDate;
+          this.completedSection = false;
         }
       });
-      category.innerText = clicked.children[0].innerText;;
+
+      category.innerText = clicked.children[0].innerText;
       count.innerText = clicked.children[1].innerText;
 
     } else if (clicked.parentElement.classList.contains("sidebar_list_date")) {
@@ -144,6 +120,48 @@ class Controller {
         } else {
           todo.parentElement.style.display = 'block';
           this.currentCategory = clickedDate;
+          this.completedSection = false;
+        }
+      });
+
+        if (clicked.classList.contains("todos_count_per_date")) {
+          category.innerText = clicked.previousElementSibling.innerText;
+          count.innerText = clicked.innerText;
+        } else {
+          category.innerText = clicked.innerText;
+          count.innerText = clicked.nextElementSibling.innerText;
+        }
+    }
+
+
+    if (clicked.classList.contains("sidebar_completed_date")) {
+      [...allTodos].forEach(todo => {
+        let todoDate = todo.textContent.trim().split('-')[1].trim();
+        let clickedDate = clicked.firstElementChild.textContent;
+
+        if (todoDate !== clickedDate || !todo.classList.contains("complete")) {
+          todo.parentElement.style.display = 'none';
+        } else {
+          todo.parentElement.style.display = 'block';
+          this.currentCategory = clickedDate;
+          this.completedSection = true;
+        }
+      });
+
+      category.innerText = clicked.children[0].innerText;
+      count.innerText = clicked.children[1].innerText;
+    } else if (clicked.parentElement.classList.contains("sidebar_completed_date")) {
+      [...allTodos].forEach(todo => {
+
+        let todoDate = todo.textContent.trim().split('-')[1].trim();
+        let clickedDate = clicked.parentElement.firstElementChild.textContent;
+
+        if (todoDate !== clickedDate || !todo.classList.contains("complete")) {
+          todo.parentElement.style.display = 'none';
+        } else {
+          todo.parentElement.style.display = 'block';
+          this.currentCategory = clickedDate;
+          this.completedSection = true;
         }
       });
 
@@ -216,23 +234,42 @@ class Controller {
   }
 
   hideTodos() {
-    let current = this.currentCategory;
     let todos = document.querySelectorAll('.todo_info');
     let categoryTitle = document.getElementById("category");
     let countTitle = document.getElementById('count');
     let count = 0;
 
-    [...todos].forEach(todo => {
-      if (todo.innerText.trim().split('-')[1].trim() === this.currentCategory) {
-        todo.parentElement.style.display = 'block'
-        count += 1;
-      } else {
-        todo.parentElement.style.display = 'none';
-      }
-    });
+    if (this.currentCategory === "Completed") {
+      [...todos].forEach(todo => {
+        if (todo.classList.contains('complete')) {
+          todo.parentElement.style.display = "block";
+          count += 1;
+        } else {
+          todo.parentElement.style.display = "none";
+        }
+      });
+    } else {
+      [...todos].forEach(todo => {
+        if (todo.innerText.trim().split('-')[1].trim() === this.currentCategory) {
+          if (this.completedSection) {
+            if (todo.classList.contains('complete')) {
+              todo.parentElement.style.display = 'block'
+              count += 1;
+            } else {
+              todo.parentElement.style.display = 'none';
+            }
+          }
+          else {
+            todo.parentElement.style.display = 'block'
+          }
+        } else {
+            todo.parentElement.style.display = 'none';
+        }
+      });
+    }
 
-    categoryTitle.innerText = this.currentCategory;
     countTitle.innerText = count;
+    categoryTitle.innerText = this.currentCategory;
   }
 
   showSidebarContent(data) {
@@ -389,6 +426,7 @@ class Controller {
     if (todoId) {
       this.api.updateSpecificTodo(todoId, json, this.showTodos.bind(this));
     } else {
+      this.currentCategory = null;
       this.api.createNewTodo(json, this.showTodos.bind(this));
     }
   }

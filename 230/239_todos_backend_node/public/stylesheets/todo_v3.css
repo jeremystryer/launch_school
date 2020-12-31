@@ -130,7 +130,7 @@ li {
   padding: 0;
 }
 
-#all_todos_sidebar_title, .sidebar_completed_date, #completed_sidebar_title {
+#all_todos_sidebar_title, .sidebar_completed_date, #completed_sidebar_title, #all_todos_sidebar_count, #completed_todos_sidebar_count, #todos_by_date_section, #completed_todos_section  {
   cursor: pointer;
 }
 
