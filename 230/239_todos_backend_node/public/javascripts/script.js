@@ -50,7 +50,9 @@ class Controller {
     let completedTodosSideBarCount = document.getElementById("completed_todos_sidebar_count");
     let todosByDateSection = document.getElementById("todos_by_date_section");
     let completedTodosSection = document.getElementById("completed_todos_section");
-    let possibleClickOptions = [allTodosSidebarTitle, allTodosSidebarTitle, completedSidebarTitle, completedTodosSideBarCount, todosByDateSection, completedTodosSection];
+    let possibleClickOptions = [allTodosSidebarTitle, allTodosSidebarTitle,
+                                completedSidebarTitle, completedTodosSideBarCount,
+                                todosByDateSection, completedTodosSection];
     let completedOptions = [completedTodosSection, completedSidebarTitle, completedTodosSideBarCount];
     let allTodosOptions = [todosByDateSection, allTodosSidebarTitle, allTodosSidebarCount];
     let clicked = event.target;
@@ -221,6 +223,7 @@ class Controller {
       });
 
       let count = document.getElementById('count');
+
       count.innerText = data.length;
       this.showSidebarContent(data);
       if (this.currentCategory) {
@@ -261,6 +264,7 @@ class Controller {
           }
           else {
             todo.parentElement.style.display = 'block'
+            count += 1;
           }
         } else {
             todo.parentElement.style.display = 'none';
@@ -358,11 +362,14 @@ class Controller {
         p1.classList.add('completed_todo');
         li.appendChild(p2);
         p2.classList.add('todos_count_per_date')
-        // p2.classList.add('completed_todo');
         p1.appendChild(document.createTextNode(prop));
         p2.appendChild(document.createTextNode(completedTodosByDate[prop]));
         todosByCompletion.insertAdjacentElement("beforeend", li);
       }
+    }
+
+    if (data.length === 0) {
+      todosByCompletion.innerHTML = '';
     }
   }
 
@@ -490,6 +497,18 @@ class Controller {
 }
 
 class API {
+  // destroy(id, callback) {
+  //   let request = new XMLHttpRequest();
+  //   request.open("DELETE", "http://localhost:3000/api/todos/" + id);
+  //
+  //   request.addEventListener('load', () => {
+  //     callback(id)
+  //   });
+  //
+  //   request.send();
+  // }
+
+
   destroyTodo(id, callback) {
     $.ajax({
       url: "http://localhost:3000/api/todos/" + id,
